@@ -15,5 +15,6 @@ You can find the source code for Jekyll at GitHub:
 [jekyll](https://github.com/jekyll/jekyll)
 
 You can find graph theory notes [here](https://czsding40925.github.io/Graph-Basics)
+You can find linear regression notes [here](https://czsding40925.github.io/Linear-Regression)
 
 [jekyll-organization]: https://github.com/jekyll
