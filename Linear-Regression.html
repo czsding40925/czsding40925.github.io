@@ -8421,18 +8421,17 @@ Let's simulate some data for this scenario:</li>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [55]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
 
 <span class="c1"># Set a seed for reproducibility</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 
 <span class="c1"># Generate the data</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">x3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
@@ -8449,6 +8448,125 @@ Let's simulate some data for this scenario:</li>
 <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="c1"># Some noise</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">b0</span> <span class="o">+</span> <span class="n">b1</span><span class="o">*</span><span class="n">x1</span> <span class="o">+</span> <span class="n">b2</span><span class="o">*</span><span class="n">x2</span> <span class="o">+</span> <span class="n">b3</span><span class="o">*</span><span class="n">x3</span> <span class="o">+</span> <span class="n">b4</span><span class="o">*</span><span class="n">x4</span> <span class="o">+</span> <span class="n">noise</span>
 
+<span class="c1"># Remember to tranpose to column vector. </span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c0883c27-581b-4b65-ad40-dae65a36f6b2">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Basics-in-Fitting-Linear-Model-in-Matrices">Basics in Fitting Linear Model in Matrices<a class="anchor-link" href="#Basics-in-Fitting-Linear-Model-in-Matrices">¶</a></h2><p>Here are the matrices we are interested in:
+$$
+\begin{align*}
+    \mathbf{Y}&amp;=
+    \begin{bmatrix}
+        y_1\\
+        y_2\\
+        \vdots\\
+        y_n
+    \end{bmatrix}
+    \mathbf{X}=
+    \begin{bmatrix}
+        x_0&amp;x_{11}&amp;x_{12}&amp;\dots&amp;x_{1k}\\
+        x_0&amp;x_{21}&amp;x_{22}&amp;\dots&amp;x_{2k}\\
+        \vdots&amp;\vdots&amp;\vdots&amp;\vdots&amp;\vdots\\
+        x_0&amp;x_{n1}&amp;x_{n2}&amp;\dots&amp;x_{nk}
+    \end{bmatrix}\\
+    \mathbf{\beta}&amp;=
+    \begin{bmatrix}
+        \beta_0\\
+        \beta_1\\
+        \vdots\\
+        \beta_k
+    \end{bmatrix}
+    \mathbf{\varepsilon}=
+    \begin{bmatrix}
+        \varepsilon_1\\
+        \varepsilon_2\\
+        \vdots\\
+        \varepsilon_n
+    \end{bmatrix}
+\end{align*}
+$$
+Thus, we can write the linear model of $n$ linear equations conviniently using matrix form: $$\mathbf{Y}=\mathbf{X}\mathbf{\beta}+\mathbf{\varepsilon}$$Now, let's recall that the estimator $\hat{\beta}$ can be written as
+$$
+\hat{\beta}=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y}
+$$This can be shown using techniques in linear algebra.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=14908105-f0c9-4b97-925d-730c92ef2011">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Compute-$%5Chat%7B%5Cbeta%7D$">Compute $\hat{\beta}$<a class="anchor-link" href="#Compute-$%5Chat%7B%5Cbeta%7D$">¶</a></h2>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=40aec528-48bd-463e-8b1c-580103e354c1">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [54]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">X_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">,</span> <span class="n">x4</span><span class="p">])</span>  
+<span class="n">X</span> <span class="o">=</span> <span class="n">X_t</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+<span class="n">hat_B</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">X_t</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X_t</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Y</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">hat_B</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>[ 5.15566137e+04  4.97946904e+01  1.48777135e+04 -5.14082061e+02
+ -1.01711829e+03]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=118a143d-d9af-4be9-bdb4-0ad906a8e044">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Running-the-Model-Using-statsmodels">Running the Model Using statsmodels<a class="anchor-link" href="#Running-the-Model-Using-statsmodels">¶</a></h2>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=16dc8996-42fb-43f0-a92b-f10a1823351c">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
+
 <span class="c1"># Create a DataFrame</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'SquareFootage'</span><span class="p">:</span> <span class="n">x1</span><span class="p">,</span> <span class="s1">'Bedrooms'</span><span class="p">:</span> <span class="n">x2</span><span class="p">,</span> <span class="s1">'Age'</span><span class="p">:</span> <span class="n">x3</span><span class="p">,</span> <span class="s1">'DistanceFromCity'</span><span class="p">:</span> <span class="n">x4</span><span class="p">,</span> <span class="s1">'Price'</span><span class="p">:</span> <span class="n">y</span><span class="p">})</span>
 
@@ -8460,6 +8578,48 @@ Let's simulate some data for this scenario:</li>
 <span class="c1"># Print the model summary</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.961
+Model:                            OLS   Adj. R-squared:                  0.960
+Method:                 Least Squares   F-statistic:                     6074.
+Date:                Thu, 31 Aug 2023   Prob (F-statistic):               0.00
+Time:                        21:37:58   Log-Likelihood:                -10655.
+No. Observations:                1000   AIC:                         2.132e+04
+Df Residuals:                     995   BIC:                         2.134e+04
+Df Model:                           4                                         
+Covariance Type:            nonrobust                                         
+====================================================================================
+                       coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------------
+const             5.156e+04   1364.833     37.775      0.000    4.89e+04    5.42e+04
+SquareFootage       49.7947      0.350    142.356      0.000      49.108      50.481
+Bedrooms          1.488e+04    227.620     65.362      0.000    1.44e+04    1.53e+04
+Age               -514.0821     22.348    -23.004      0.000    -557.936    -470.228
+DistanceFromCity -1017.1183     57.652    -17.642      0.000   -1130.251    -903.985
+==============================================================================
+Omnibus:                        0.227   Durbin-Watson:                   2.079
+Prob(Omnibus):                  0.893   Jarque-Bera (JB):                0.311
+Skew:                          -0.013   Prob(JB):                        0.856
+Kurtosis:                       2.918   Cond. No.                     1.07e+04
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.07e+04. This might indicate that there are
+strong multicollinearity or other numerical problems.
+</pre>
 </div>
 </div>
 </div>
