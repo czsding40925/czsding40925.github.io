@@ -5,7 +5,7 @@
 
 layout: default
 ---
-## Hello! Welcome to Connor's math notes page. 
+**Hello! Welcome to Connor's math notes page.**
 
 This is Connor Ding. You can learn more about me [here](https://www.czsding.com/) to this site. The purpose of this site is for me to organize math and coding notes related to different science and engeering topics. <br>
 
