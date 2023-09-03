@@ -11,4 +11,4 @@ This is Connor Ding. You can learn more about me [here](https://www.czsding.com/
 
 At the minimum, this site will be used for my own reference, but I hope that other people can find it helpful as well. Gradually, I will be compiling notes from my engineering courses at Stanford as well as my mathematics courses at UC Santa Barbara. In addition, I will link some cool resources related to neuroscience, math and engineering. 
 
-[Daniel Thayer Exclusive](https://czsding40925.github.io/IEM-Simulation)
+[Daniel Thayer Only](https://czsding40925.github.io/IEM-Simulation)
