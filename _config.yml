@@ -21,8 +21,7 @@
 layout: default
 title: Connor Ding
 email: czsding@stanford.edu
-description: >- # this means to ignore newlines until "baseurl:"
-Connor Ding
+# description: Connor Ding # this means to ignore newlines until "baseurl:"
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: ConnorHiDing
@@ -30,13 +29,13 @@ github_username:  czsding40925
 
 # Build settings
 theme: minima
-# theme: jekyll-theme-leap-day 
-# theme: jekyll-theme-slate
 #remote_theme: pages-themes/leap-day@v0.2.0
-#plugins:
-  #- jekyll-remote-theme
 plugins:
   - jekyll-feed
+  - jekyll-remote-theme # add this line to the plugins list if you already have one
+
+
+  
 
 # Exclude from processing.
 # The following items will not be processed, by default.
