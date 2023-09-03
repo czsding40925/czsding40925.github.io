@@ -5,4 +5,6 @@
 
 layout: default
 ---
-This is Connor. I will be gradually moving my content from [my original website](https://www.czsding.com/) to this site. In the mean time, check out my current website or go to the about page to see the beta versions of my graph theory and linear regression notes. 
+# Hello! Welcome to my Project Page. 
+
+This is Connor Ding. You can know more about me [here](https://www.czsding.com/) to this site. The purpose of this site is for me to organize math+coding notes related to different science and engeering topics. I will be keeping this site plain and simple. 
