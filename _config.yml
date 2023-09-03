@@ -22,7 +22,7 @@ layout: default
 title: Connor Ding
 email: czsding@stanford.edu
 description: >- # this means to ignore newlines until "baseurl:"
- Test
+ What am I supposed to say here?
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: ConnorHiDing
