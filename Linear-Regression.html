@@ -7436,6 +7436,34 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=32397876-981c-464e-8fd4-b68e4a1567ff">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h1 id="Introduction">Introduction<a class="anchor-link" href="#Introduction">¶</a></h1><p>Ever since middle school science classes, we know what independent variables and dependent variables are. This time, let's try to quantify how the independent variables and dependent variables are related. Here, we have that</p>
+<ul>
+<li>$Y$ is the independent variable.</li>
+<li>$x$ is the dependent variable.</li>
+</ul>
+<p>It's very unlikely to be the case that $Y=x$ in our experiments. So, we can write down some parameters $\beta$ that relate $x$ to $Y$.</p>
+<ul>
+<li>$\beta_0$ is the base parameter such that if we input $x=0$, this is what $Y$ equals to.</li>
+<li>$\beta_1$ is the parameter that modifies $x$ and represents how much effect $x$ has on $Y$ roughly speaking.</li>
+</ul>
+<p>Therefore, we have built our self a very simple linear model
+$$
+Y=\beta_0+\beta_1x
+$$But, we know that we might have more than one independent variables, say $k$ of them. Thus, we will be having $k+1$ parameters $\beta_0,\beta_1,\dots,\beta_k$. So, a more general version of the linear model can be written as
+$$
+Y=\beta_0+\beta_1x_1+\dots+\beta_kx_k
+$$
+Now we know what linear models are. I will assume you have a good knowledge in key concepts of probability theory such as expectation, variance, covariance, etc. Also, you should know basic properties of estimators and some hypothesis tests (mainly $t$-tests). For the multiple regression, you should also know how matrix multiplication, inverse and transpose work.</p>
+</div>
+</div>
+</div>
+</div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=52a3346e-ef6a-433e-8d93-53bb8c0f0f39">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
