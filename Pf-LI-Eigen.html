@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Linear-Algebra-Speedrun</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Pf-LI-Eigen</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7436,403 +7436,61 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f74538e8-1f44-4eed-8375-1fad1f3ab685">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=82229523-d288-4fa4-a392-963e85a1d23d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Preface">Preface<a class="anchor-link" href="#Preface">¶</a></h1><p>As the name suggests, this is a speedrun of linear algebra, which means that it only contains the some essential definitions and important results without proofs or significant examples. This page is mostly for references. To fully grasp linear algebra, try to prove the important results and/or work with concrete examples.</p>
-<p>The content is based on Math 108A at UCSB taught by Professor Jefferey Stopple in Spring 2022. The textbook we used is <em>Linear Algebra Done Right</em> by Sheldon Axler. Since this is an upper level undergraduate linear algebra course, the content will be very abstract.</p>
+<h1 id="Statement">Statement<a class="anchor-link" href="#Statement">¶</a></h1><p>Suppose $\vec{v_1},\dots,\vec{v_n}$ are eigenvectors of $T$ corresponding to distinct eigenvalues $\lambda_1,\dots,\lambda_m$. Then $\vec{v_1},\dots,\vec{v_m}$ are linearly independent.</p>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4a0a327d-348f-44d3-8413-aa51b993a4e2">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ed6eb678-b7fe-4374-a488-1f34468c9eea">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="1.-Introduction-to-Vector-Space">1. Introduction to Vector Space<a class="anchor-link" href="#1.-Introduction-to-Vector-Space">¶</a></h1>
+<h2 id="Proof-1:-Contradiction">Proof 1: Contradiction<a class="anchor-link" href="#Proof-1:-Contradiction">¶</a></h2><p>Suppose for the sake of contradiction that $\vec{v_1},\dots,\vec{v_m}$ are linearly dependent. The linear dependence lemma says that $\exists k\leq m$ so $\vec{v_k}\in \text{span}(\vec{v_1},\dots,\vec{v_{k-1}})$ and $\vec{v_1},\dots,\vec{v_{k-1}}$ are linearly independent. Note that
+\begin{align}
+		\vec{v_k}&amp;=c_1\vec{v_1}+\dots+c_{k-1}\vec{v_{k-1}} \tag{1} \\
+		A\vec{v_k}&amp;=c_1A\vec{v_1}+\dots+c_{k-1}A\vec{v_{k-1}} \tag{2}\\
+    	\lambda\vec{v_k}&amp;=c_1\lambda_1\vec{v_1}+\dots+c_{k-1}\lambda_{k-1}\vec{v_{k-1}} \tag{3}
+	\end{align} Multiplying $(1)$ by $\lambda_k$,
+\begin{equation}
+    	\lambda_k\vec{v_k}=c_1\lambda_k\vec{v_1}+\dots+c_{k-1}\lambda_k\vec{v_{k-1}} \tag{4}
+	\end{equation} Subtracting (3) from (4)
+\begin{equation}
+		\vec{0}=c_1(\lambda_1-\lambda_k)\vec{v_1}+\dots+c_{k-1}(\lambda_{k-1}-\lambda_k)\vec{v_{k-1}} 
+	\end{equation} By linear independence hypothesis, $c_1(\lambda_1-\lambda_k),\dots,c_{k-1}(\lambda_{k-1}-\lambda_k)=0$ Since eigenvalues are distinct, $c_1,\dots,c_{k-1}=0 \implies \vec{v_k}=0$, which is a contradiction since eigenvectors cannot be $0$.</p>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d386ab55-d9ba-43da-ae9d-9665f0d032e8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=86b41020-4e5e-49d7-87b5-6768d5693877">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Vector-Space-Axioms">Vector Space Axioms<a class="anchor-link" href="#Vector-Space-Axioms">¶</a></h2><p>A vector space over a field $\mathbb{F}$ (which is usually the real line $\mathbb{R}$ or the complex field $\mathbb{C}$) is a set $V$ whose elements are called vectors with two operations:</p>
-<ul>
-<li><strong>Vector addition</strong>: If $\vec{u},\vec{v} \in V$, then $\vec{u}+\vec{v} \in V$.</li>
-<li><strong>Scalar multiplication</strong>: If $c\in \mathbb{F}, \vec{v}\in V$, then $c\cdot\vec{v}\in \vec{V}$.</li>
-</ul>
-<p>Additionally, the following properties must be satisfied for all $\vec{u}, \vec{v},\vec{w} \in V$:</p>
-<ul>
-<li><strong>Commutativity</strong>: $\vec{u}+\vec{v}=\vec{v}+\vec{u}$.</li>
-<li><strong>Associativity</strong>: $(\vec{u}+\vec{v})+\vec{w}=\vec{u}+(\vec{v}+\vec{w})$.</li>
-<li><strong>Additive Identity</strong>: There exists $\vec{0}\in V$, such that for all $\vec{V}\in V$, $\vec{v}+\vec{0}=\vec{v}$.</li>
-<li><strong>Additive Inverse</strong>: For all $\vec{u}\in V$, there exists $\vec{v}\in V$, such that $\vec{v}+\vec{u}=\vec{0}$.</li>
-<li><strong>Multiplicative Identity</strong>: There exists $1\in\mathbb{F}$ such that $\forall\vec{v}\in V$, $1\cdot\vec{v}=\vec{v}$.</li>
-<li><strong>Distributative Law</strong>: For any $a\in \mathbb{F}$, $\vec{u},\vec{v} \in V, a(\vec{u}+\vec{v})=a\vec{u}+a\vec{v}$.</li>
-</ul>
-<p>There are many examples of vector spaces. We will be mainly working with the Euclidean Space $\mathbb{R}^n$, and occasionally the polynomial space $P_n(x)$.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=dbf51a00-b0c3-4763-93de-f744d34bd137">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Subspace">Subspace<a class="anchor-link" href="#Subspace">¶</a></h2><p>Let $V$ be a vector space and $U\subseteq V$. $U$ is a subspace if it is a vector space with the same operations $+,\cdot$ and satisfies:</p>
-<ul>
-<li><strong>Containing the zero element</strong>: $\vec{0}\in U$</li>
-<li><strong>Closed under addition</strong>: $\vec{u_1},\vec{u_2} \in U$ implies $\vec{u_1}+\vec{u_2} \in U$</li>
-<li><strong>Closed under scalar multiplication</strong>: $\lambda\in\mathbb{F}, \vec{u}\in U$ implies $\lambda\vec{u}\in U$</li>
-</ul>
-<p>For a quick example, consider $\mathbb{R}^n$. $\mathbb{R}^m$ is a subspace of $\mathbb{R}^n$ if $n\leq m$. And, we have the following remark: Let $V$ be a vector space, $U,W$ be subspaces of $V$, then</p>
-<ul>
-<li>$U\cap W$ is a subspace.</li>
-<li>$U \cup W$ is a subspace if one is contained in another.</li>
-<li>The set $U+W=\{\vec{u}+\vec{w}:\vec{u} \in U, \vec{w} \in W\}$ is a subspace containing $U$ and $W$. In fact, it is the smallest subspace containing $U+W$.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0299da13-b582-4f77-b042-2f94753a9eca">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Direct-Sum">Direct Sum<a class="anchor-link" href="#Direct-Sum">¶</a></h2><p>$U+W$ is a <strong>direct sum</strong> (written as $U \bigoplus W$) if every vector in the sum can be written in exactly one way. In other words, if $\vec{u_1}+\vec{w_1}=\vec{u_2}+\vec{w_2}$, then $\vec{u_1}=\vec{u_2}$ and $\vec{w_1}=\vec{w_2}$.</p>
-<ul>
-<li>$U+W$ is direct if and only if $\vec{0}$ can be written exactly in one way.</li>
-<li>$V$ is a vector space and $U,W$ are subspaces. $U+W$ is a direct sum if and only if $U\cap W =\{0\}$ (Note: it doesn't not hold for more than two subspaces).</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f733e28f-c3f9-40a4-87ae-8610a226c405">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="2.-Linear-Combination,-Span,-and-Linear-Independence">2. Linear Combination, Span, and Linear Independence<a class="anchor-link" href="#2.-Linear-Combination,-Span,-and-Linear-Independence">¶</a></h1><h2 id="Definitions">Definitions<a class="anchor-link" href="#Definitions">¶</a></h2><p>Let $V$ be a vector space over a field $\mathbb{F}$ and $\vec{v_1},\vec{v_2},...,\vec{v_n} \in V$:</p>
-<ul>
-<li>A <strong>linear combination</strong> is any expression $$c_1\vec{v_1}+c_2\vec{v_2}+...+c_n\vec{v_n}$$ for some $c_j\in\mathbb{F}$.</li>
-<li>The <strong>span</strong> of $\vec{v_1},\vec{v_2},...,\vec{v_n} \in V$ is the set of all linear combinations: $$\text{span}\{\vec{v_1},\vec{v_2},...,\vec{v_n}\}=\{c_1\vec{v_1}+c_2\vec{v_2}+...+c_n\vec{v_n}: c_j\in\mathbb{F}\}$$If $\text{span}\{\vec{v_1},\vec{v_2},...,\vec{v_n}\}=U$ for some subspace $U$ of $V$, then we say $\vec{v_1},\vec{v_2},...,\vec{v_n}$ <strong>span</strong> $U$.</li>
-<li>$\vec{v_1},\vec{v_2},...,\vec{v_n} \in V$ are <strong>linearly independent</strong> if the only solution to $$c_1\vec{v_1}+c_2\vec{v_2}+...+c_n\vec{v_n}=0$$ is $c_1,c_2,...c_n=0$.</li>
-</ul>
-<h2 id="Some-Results">Some Results<a class="anchor-link" href="#Some-Results">¶</a></h2><ul>
-<li>$\text{span}\{\vec{v_1},\vec{v_2},...,\vec{v_n}\}$ is a subspace and also the smallest subspace containing $\vec{v_1},\vec{v_2},...,\vec{v_n} \in V$.</li>
-<li>A vector space $V$ is <strong>finite dimensional</strong> if $V$ is the span of a finite list of vectors. Otherwise it is infinite dimensional.</li>
-<li>If $\vec{v_1},\vec{v_2},...,\vec{v_n}$ are linearly independent, then any vector in the vector space $V$ can only be written in one way as a linear combination of $\vec{v_1},\vec{v_2},...,\vec{v_n}$.</li>
-<li>Suppose $\vec{v_1}, \vec{v_2},...,\vec{v_n}$ is linearly dependent, but the sublist of first $k$ vectors is linearly independent. Then, for some $j, k+1\leq j \leq n, \vec{v_j}\in \text{span}\{\vec{v_1},...,\vec{v_{j-1}}\}$ and $$\text{span}\{\vec{v_1},\vec{v_2},...,\vec{v_{j-1}}, \vec{v_{j+1}},...,\vec{v_n}\} = \text{span}\{\vec{v_1},...,\vec{v_n}\}.$$This suggests that you can in a linearly dependent list of vectors, you can remove some vectors such that the remaining list of vectors and the original list of vectors have the same span.</li>
-<li>If $\vec{u_1},...,\vec{u_m}$ is linearly independent and $\vec{w_1},...,\vec{w_n}$ span $V$, then $m\leq n$.</li>
-<li>If $V$ is finite dimensional and $U$ is a subspace of $V$, then $U$ is finite dimensional.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6d83164d-5426-42cd-9a68-6f598e224c8b">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="A-Quick-Example">A Quick Example<a class="anchor-link" href="#A-Quick-Example">¶</a></h2><p>Let $V=\mathbb{R}^3$ be our vector space and consider the following vectors
-$$
-\vec{v_1}=
-\begin{bmatrix}
-1\\
-0\\
-0
-\end{bmatrix},
-\vec{v_2}=
-\begin{bmatrix}
-0\\
-1\\
-0
-\end{bmatrix},
-\vec{v_3}=
-\begin{bmatrix}
-0\\
-0\\
-1
-\end{bmatrix},
-\vec{v_4}=
-\begin{bmatrix}
-1\\
-1\\
-0
-\end{bmatrix}
-$$</p>
-<ul>
-<li>The linear combination of $\{\vec{v_1},\vec{v_2},\vec{v_3},\vec{v_4}\}$ is just $a\vec{v_1}+b\vec{v_2}+c\vec{v_3}+d\vec{v_4}$, and we can write it as<br/>
-\begin{pmatrix}
-  a+d\\
-  b+d\\
-  c
-  \end{pmatrix}</li>
-<li>$\{\vec{v_1},\vec{v_2},\vec{v_3},\vec{v_4}\}$ span $\mathbb{R}^3$.</li>
-<li>Note that $\{\vec{v_1},\vec{v_2},\vec{v_3}\}$ also span $\mathbb{R}^3$. We reomved $\vec{v_4}$ but the span remains the same.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3edb53ee-5a06-4208-8d2b-b1629567ea55">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="3.-Basis-and-Dimension">3. Basis and Dimension<a class="anchor-link" href="#3.-Basis-and-Dimension">¶</a></h1><h2 id="Definition">Definition<a class="anchor-link" href="#Definition">¶</a></h2><ul>
-<li>Let $V$ be a vector space. Then a <strong>basis</strong> is a list of $\vec{v_1},...,\vec{v_n}$ such that it is linearly independent and spans $V$.</li>
-<li>The <strong>dimension</strong> of $V$ is the number of vectors in its basis. We write it as $\text{dim}(V)$.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4f169158-023e-47c3-89d8-a3c87d1d1f3e">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Some-Results">Some Results<a class="anchor-link" href="#Some-Results">¶</a></h2><ul>
-<li>If a list of vectors spans $V$, then there is some sublist that is a basis for $V$.</li>
-<li>Every finite dimensional vector space has a basis.</li>
-<li>Every linearly independent list of vectors can be extended to a basis.</li>
-<li>Suppose $V$ is finite dimensional and $U$ is a subspace of $V$, there exists a subspace $W$ such that $V=U\bigoplus W$.</li>
-<li>If $\vec{v_1},...,\vec{v_n}$ is a basis for $V$, and $\vec{v_1},...,\vec{v_m}$ is another basis, then $n=m$. This result shows that the dimension of a vector space $V$ is unique.</li>
-<li>If $V$ is finite dimensional and $U$ is a subspace of $V$, then $\text{dim}(U) \leq \text{dim}(V)$.</li>
-<li>Suppose $\text{dim}(V)=n$. If $\vec{v_1},...,\vec{v_n}$ is linearly independent, then they are a basis.</li>
-<li>Suppose $\text{dim}(V)=n$. If $\vec{w_1},...,\vec{w_n}$ span $V$, then they are a basis.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f937663b-6e25-4530-8770-e1206bd18077">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="A-Quick-Example">A Quick Example<a class="anchor-link" href="#A-Quick-Example">¶</a></h2><p>As before, let $V=\mathbb{R}^3$ be our vector space and consider the following vectors
-$$
-\vec{v_1}=
-\begin{bmatrix}
-1\\
-0\\
-0
-\end{bmatrix},
-\vec{v_2}=
-\begin{bmatrix}
-0\\
-1\\
-0
-\end{bmatrix},
-\vec{v_3}=
-\begin{bmatrix}
-0\\
-0\\
-1
-\end{bmatrix},
-\vec{v_4}=
-\begin{bmatrix}
-1\\
-1\\
-0
-\end{bmatrix}
-$$</p>
-<ul>
-<li>$\{\vec{v_1},\vec{v_2},\vec{v_3}\}$ is a basis for $V$</li>
-<li>$\text{dim}(V)=3$</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1c9d02e3-c9bd-419e-8b9f-23445626b753">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="4.-Linear-Transformations(Linear-Maps)">4. Linear Transformations(Linear Maps)<a class="anchor-link" href="#4.-Linear-Transformations(Linear-Maps)">¶</a></h1><h2 id="Definition">Definition<a class="anchor-link" href="#Definition">¶</a></h2><p>Let $V,W$ be vector spaces over a field $\mathbb{F}$. A function $T: V \to W$ is called <strong>linear transformation</strong> or a <strong>linear map</strong> if the following properties hold:</p>
-<ul>
-<li><strong>Additivity</strong>: For all $\vec{v_1},\vec{v_2} \in V$, $T(\vec{v_1}+\vec{v_2})=T\vec{v_1}+T\vec{v_2}.$</li>
-<li><strong>Homogeneity</strong>: For all $\forall\vec{v}\in V$ and $c \in \mathbb{F}$,  $T(c\vec{v})=c T(\vec{v}).$</li>
-</ul>
-<p>In addition, we write $\mathcal{L}(V,W)$ as the set of all linear maps from $V$ to $W$.</p>
-<h2 id="Some-Results">Some Results<a class="anchor-link" href="#Some-Results">¶</a></h2><ul>
-<li><strong>$T$ is completely determined by the basis of $V$.</strong> Let $\vec{v_1},...,\vec{v_n}$ be a basis for $V$ and let $\vec{w_1},...,\vec{w_n}$ be any vectors in $W$. Then there exists a unique linear map $T: V \to W$ so that $T(\vec{v_j})=\vec{w_j}$ for all $j$.</li>
-<li>Let $U,V,W$ be vector spaces such that $T\in\mathcal{L}(U,V), S\in\mathcal{L}(V,W)$ Define $$ST\in\mathcal{L}(U,W)$$ such that $ST(\vec{u})=S(T(\vec{u}))$. Note that $TS$ probably doesn't make sense.</li>
-</ul>
-<h2 id="Example">Example<a class="anchor-link" href="#Example">¶</a></h2><p>Matrices. They are linear maps. That's why we study them in linear algebra lol.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4102c682-8ea4-497a-af21-db24cac4cc51">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Null-Space-and-Range">Null Space and Range<a class="anchor-link" href="#Null-Space-and-Range">¶</a></h2><ul>
-<li>Let $T\in\mathcal{L}(V,W)$, the <strong>null space</strong> (or <strong>kernel</strong>) of $T$, denoted as $\text{null}(T)$ (or $\text{ker}(T)$) is the set $\{\vec{v} \in V: T(\vec{v})=\vec{0}\}$, the collections of $\vec{v}\in V$ such that $T$ is mapped to the zero vector. Note that $\text{null}(T)$ is a subspace.</li>
-<li>Let $T\in\mathcal{L}(V,W)$. The <strong>range</strong> (or <strong>image</strong>) of $T$ is $\{\vec{w}\in W: \vec{w} = T(\vec{v}) \text{ for some } \vec{v} \}$, all the possible values that $T$ can map $\vec{v}\in V$ to.</li>
-<li>$T\in\mathcal{L}(V,W)$ is <strong>injective</strong> (or <strong>1-to-1</strong>) if $T(\vec{v_1})=T(\vec{v_2}) \implies \vec{v_1}=\vec{v_2}$.</li>
-<li>Let $T\in\mathcal{L}(V,W)$. T is <strong>surjective</strong> (or <strong>onto</strong>) if $\text{range}(T)=W$.</li>
-</ul>
-<h2 id="Some-Results">Some Results<a class="anchor-link" href="#Some-Results">¶</a></h2><ul>
-<li>$T\in\mathcal{L}(V,W)$ is injective if and only if $\text{null}(T)=\{\vec{0}\}$.</li>
-<li>Let $T\in\mathcal{L}(V,W)$. T is surjective (or onto) if $\text{range}(T)=W$.</li>
-<li><strong>Fundamental Theorem of Linear Algebra</strong>: Let $V$ be a finite dimensional vector space. Let Let $T\in\mathcal{L}(V,W)$. Then $$\text{dim}(V)=\text{dim}(\text{null}(T))+\text{dim}(\text{range}(T))$$</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4b33a003-5c28-428b-b01a-9c24a5186118">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="5.-Coordinate-Maps-&amp;-Matrices">5. Coordinate Maps &amp; Matrices<a class="anchor-link" href="#5.-Coordinate-Maps-&amp;-Matrices">¶</a></h1><ul>
-<li>Let $V$ be a vector space with basis $B=\vec{v_1},...,\vec{v_n}$. Define a coordinate map $C_B: V \to F^n$
-$$
-      \vec{v}=c_1\vec{v_1}+...+c_n\vec{v_n} \to 
-      	\begin{vmatrix} 
-      		c_1 \\
-      		c_2 \\
-      		.\\
-      		.\\
-      		.\\
-      		c_n
-      	\end{vmatrix}
-  $$ Note that $C_B$ is a linear map.</li>
-<li>Let $T \in \mathcal{L}(V,W)$ where $V$ has basis $B=\vec{v_1},...,\vec{v_n}$ and $W$ has basis $B'=\vec{w_1},...,\vec{w_m}$. Define the matrix of $T, \mathcal{M}(T)$, a $m \times n$ matrix such that the column $k$ of $\mathcal{M}(T), 1 \leq k \leq n$ is $$C_{B'}(T(\vec{v_k})) \in F^m$$.</li>
-<li>Let $A$ be an $m\times n$ matrix. The number of linearly independent columns of $A$ in $\mathbb{R}^m=$ the number of linearly independent rows of $A$ in $\mathbb{R}^n$. This number is called the <strong>rank</strong> of $A$.</li>
-<li>Confusing? It's what all I have for now:( I'm planning to make write more detailed notes on this topic. The takeaway is that <strong>every linear transformation can be written as a matrix with respect to a particular basis</strong>.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c3c21431-aa60-416a-951c-d201e7e82947">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="6.-Invertibility-and-Isomorphism">6. Invertibility and Isomorphism<a class="anchor-link" href="#6.-Invertibility-and-Isomorphism">¶</a></h1><h2 id="Definitions">Definitions<a class="anchor-link" href="#Definitions">¶</a></h2><ul>
-<li>Let $T \in \mathcal{L}(U,V)$. $T$ is <strong>invertible</strong> if there exists a function $S: W \to V$ such that $ST=I_V$ and $TS=I_W$, where $I_V, I_W$ is the identity map in $V$ and $W$ respectively.</li>
-<li>If $V$ and $W$ are vector spaces such that there exists an invertible $T\in \mathcal{L}(V,W)$. We way $V,W$ are <strong>isomorphic</strong> and $T$ is an <strong>isomorphism</strong>.</li>
-</ul>
-<h2 id="Some-results">Some results<a class="anchor-link" href="#Some-results">¶</a></h2><ul>
-<li>The inverse of $T$ is unique.</li>
-<li>Let $T \in \mathcal{L}(U,V)$. $T$ is invertible if and only if $T$ is injective and surjective.</li>
-<li>Let $T\in \mathcal{L}(U,V)$ and $S\in\mathcal{L}(V,W)$, both isomorphism. Then $ST$ is an isomorphism and $$(ST)^{-1}=T^{-1}S^{-1}$$.</li>
-<li>$T\in \mathcal{L}(V,V)$ is called an <strong>operator</strong>. For short hand, we write $\mathcal{L}(V)$ instead of $\mathcal{L}(V,V)$. Suppose $\text{dim}(V) = n, T\in\mathcal{L}(V)$. Then the following statements are equivalent:<ul>
-<li>$T$ is invertible</li>
-<li>$T$ is injective</li>
-<li>$T$ is surjective</li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5d39f7b0-a7ac-4027-afb3-e6a7c751125d">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="7.-Linear-Functional-and-Duality">7. Linear Functional and Duality<a class="anchor-link" href="#7.-Linear-Functional-and-Duality">¶</a></h1><ul>
-<li>A <strong>linear functional</strong> on $V$ is any $\phi \in \mathcal{L}(V,\mathbb{F})$, linear maps mapping from $V$ to its corresponding field $\mathbb{F}$. For short hand, we write $V'=\mathcal{L}(V,\mathbb{F})$. $V'$ is the dual space of $V$.</li>
-<li>If $T \in \mathcal{L}(V,W)$ define $T'\in\mathcal{L}(W',V')$ by $T'\psi = \psi \circ T$.</li>
-<li>Let $\text{dim}(V)=n, \text{dim}(W)=m$. $\mathcal{M}(T)$ is a $m\times n$ matrix. Since $\text{dim}(W)'=m, \text{dim}(V)'=n, \mathcal{M}(T')$ is a $n\times m$ matrix.</li>
-<li>Let $U$ be a subspace of $V$. The <strong>annihilator</strong> of $U$, denoted by $U^0$ is $\{\psi \in V': \psi(\vec{u})=0, \forall \vec{u}\in U\}$. Note that $U^0$ is a subspace of $V'$, not $V$.</li>
-</ul>
-<h2 id="Results">Results<a class="anchor-link" href="#Results">¶</a></h2><ul>
-<li>Suppose $V$ has a basis $\vec{v_1},...,\vec{v_n}$ and $\varphi_1,...,\varphi_n$ is defined as $$\varphi_k(c_1\vec{v_1}+...+c_m\vec{v_n})=c_k$$ for $1\leq k \leq n$. Then they are a basis for dual space $V'$ and $\text{dim}(V)=\text{dim}(V')$.</li>
-<li>$\mathcal{M}(T')=\mathcal{M}(T)^t$.</li>
-<li>$\text{dim}(U)+\text{dim}(U^0)=\text{dim}(V')$</li>
-<li>$\text{dim}(U)+\text{dim}(U)^0=\text{dim}(V)'$</li>
-<li>Let $T\in\mathcal{L}(V,W)$. Then<ul>
-<li>$\text{null} (T')=\text{range}(T^0).$</li>
-<li>$\text{dim}(\text{null}(T')+\text{dim}(V)=\text{dim}(\text{null}(T))+\text{dim}(W).$</li>
-</ul>
-</li>
-<li>Let $T\in \mathcal{L}(V,W)$. Then $\text{null}(T')=\text{range}(T^0)$.</li>
-<li>Let $T\in \mathcal{L}(V,W)$. Then $T$ is injective if and only if $T'$ is injective.</li>
-<li>$T\in\mathcal{L}(V,W)$ Then<ul>
-<li>$\text{dim}(\text{range}(T)) = \text{dim}((\text{range}(T'))$</li>
-<li>$\text{null}(T)^0=\text{range}(T')$</li>
-</ul>
-</li>
-<li>$T \in \mathcal{L}(V,W)$. $T$ is injective if and only if $T'$ is surjective.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7a79d775-f95a-4655-920c-833c941c7d4a">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="8.-Eigenvalues,-Eigenvectors-and-Diagonalization">8. Eigenvalues, Eigenvectors and Diagonalization<a class="anchor-link" href="#8.-Eigenvalues,-Eigenvectors-and-Diagonalization">¶</a></h1><h2 id="Definitions">Definitions<a class="anchor-link" href="#Definitions">¶</a></h2><ul>
-<li>Let $T\in \mathcal{L}(V)$ and $U$ be a subspace. We say $U$ is <strong>invariant under</strong> $T$ (or <strong>$T$-invariant</strong>) if $\vec{u}\in U$ implies $T\vec{u} \in U$.</li>
-<li>Let $A\in\mathcal{L}(V), \lambda \in \mathbb{F}$. If there exists $\vec{v}\neq \vec{0}$ such that $$A\vec{v}=\lambda\vec{v},$$ then $\vec{v}$ is an <strong>eigenvector</strong> of $A$ and $\lambda$ is an <strong>eigenvalue</strong>.<ul>
-<li>If this happens, $U_{\vec{v}}=\{c\vec{v}:c\in\mathbb{F}\}$ is an 1-D invariant subspace of $V$.</li>
-</ul>
-</li>
-<li>$T\in \mathcal{L}(V)$ is <strong>diagonalizable</strong> if $V$ has a basis $B$ consist of eigenvectors.</li>
-</ul>
-<h2 id="Results">Results<a class="anchor-link" href="#Results">¶</a></h2><ul>
-<li>Let $T\in\mathcal{L}(V), \lambda\in\mathbb{F}$. The following statements are equivalent:<ul>
-<li>$\lambda$ is an eigenvalue</li>
-<li>$T-\lambda I$ is not injective.</li>
-<li>$\text{null}(T-\lambda I) \neq \{\vec{0}\}$.</li>
-<li>$T-\lambda I$ is not surjective.</li>
-<li>$\text{range}(T-\lambda I) \neq V$.</li>
-<li>$T-\lambda I$ is not invertible.</li>
-<li>$\text{det}(T-\lambda I)=0$.</li>
-</ul>
-</li>
-<li><strong>Suppose $\vec{v_1},\dots,\vec{v_n}$ are eigenvectors of $T$ corresponding to distinct eigenvalues $\lambda_1,\dots,\lambda_m$. Then $\vec{v_1},\dots,\vec{v_m}$ are linearly independent.</strong> <a href="https://czsding40925.github.io/Pf-LI-Eigen"><em>Proof</em></a></li>
-<li>$T$ has at most $\text{dim}(V)$ distinct eigenvalues.</li>
-<li>If $\mathbb{F}=\mathbb{C}$, then $T$ has at least 1 eigenvector.</li>
-<li>Suppose $T$ has a basis $\vec{v_1},\dots,\vec{v_n}$. Then
-$$ \mathcal{M}(T)=
-      \begin{bmatrix}
-      	\lambda_1 &amp; \dots &amp; 0 \\
-      	\vdots &amp;\vdots &amp;\vdots \\
-      	0 &amp;\dots &amp;\lambda_n
-      \end{bmatrix}
-  $$ if and only if $T\vec{v_j}=\lambda_j\vec{v_j}$ for all $j$.</li>
-<li>If $T$ is diagonalizable, then $V$ has a basis so that $\mathcal{M}(T)$ is a diagonal matrix.</li>
+<h2 id="Proof-2:-Induction-on-$m$">Proof 2: Induction on $m$<a class="anchor-link" href="#Proof-2:-Induction-on-$m$">¶</a></h2><ul>
+<li><strong>Base case $\vec{v_1}=0$:</strong> By definition of eigenvectors, $c_1\vec{v_1}=0\implies c_1=0$.</li>
+<li><strong>Inductive Step:</strong> Suppose that $\vec{v_1},\dots,\vec{v_m}$ are linearly independent. If
+\begin{equation}
+      c_1\vec{v_1}+c_{m-1}\vec{v_{m-1}}+c_m\vec{v_m}=0 \tag{1}
+  \end{equation} Multiply by $A$,
+\begin{align}
+      	c_1A\vec{v_1}+c_{m-1}A\vec{v_{m-1}}+c_mA\vec{v_m}&amp;=0 \tag{2}\\
+      	c_1\lambda_1\vec{v_1}+c_{m-1}\lambda_{m-1}\vec{v_{m-1}}+c_m\lambda_m\vec{v_m}&amp;=0 \tag{3}
+      \end{align} Multiply (1) by $\lambda_m$.
+\begin{align}
+      	c_1\lambda_m\vec{v_1}+c_{m-1}\lambda_m\vec{v_{m-1}}+c_m\lambda_m\vec{v_m}&amp;=0 \tag{4}\\
+      \end{align} Subtract (4) from (3)
+\begin{align}
+      	c_1(\lambda_1-\lambda_m)\vec{v_1}+c_{m-1}(\lambda_{m-1}-\lambda_m)\vec{v_{m-1}}&amp;=0 \tag{5}
+      \end{align} By induction, $c_1(\lambda_1-\lambda_m),\dots, c_{m-1}(\lambda_{m-1}-\lambda_m)=0$. Since eigenvalues are distinct, $c_1,\dots, c_{m-1}=0$, which implies $ c_m\vec{v_m}=0$ and $c_m=0$ since eigenvectors are non-zero vectors.</li>
 </ul>
 </div>
 </div>
