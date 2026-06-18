@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How Lossless Compression Works — Interactive (EE274)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+  :root{
+    --bg:#0f1220;--panel:#171a2b;--panel2:#1e2238;--ink:#e7e9f3;--muted:#9aa0bd;
+    --accent:#5b8cff;--accent2:#46d1a2;--warn:#ffb454;--bad:#ff6b6b;--violet:#c98bff;--line:#2b3050;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65}
+  header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;position:sticky;top:0;background:rgba(15,18,32,.92);backdrop-filter:blur(6px);z-index:10}
+  header a.home{color:var(--muted);text-decoration:none;font-size:13px}
+  header h1{font-size:18px;margin:0;font-weight:650}
+  header .tag{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+  .doc{max-width:780px;margin:0 auto;padding:0 24px 90px}
+  .hero{padding:54px 0 8px}
+  .hero h2{font-size:34px;line-height:1.2;margin:0 0 14px;background:linear-gradient(90deg,#fff,#9fb4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{font-size:18px;color:#cfd3ec;margin:0}
+  .step{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-top:52px}
+  h3{font-size:24px;margin:6px 0 10px}
+  h4{font-size:16px;color:var(--accent2);margin:22px 0 6px}
+  p{margin:13px 0;font-size:16px}
+  code{font-family:var(--mono);background:var(--panel2);padding:1px 5px;border-radius:5px;font-size:.9em}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0}
+  .aside{background:linear-gradient(180deg,rgba(91,140,255,.08),transparent);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:18px 0;font-size:15px}
+  .aside b{color:var(--accent2)}
+  .bitdemo{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-family:var(--mono);margin:6px 0}
+  .glyph{font-size:22px;font-weight:800;background:var(--panel2);border:1px solid var(--line);border-radius:8px;width:42px;height:42px;display:grid;place-items:center}
+  .arrow{color:var(--muted)}
+  .bword span{display:inline-block;padding:3px 1px}
+  .b1{color:var(--accent2)}.b0{color:var(--muted)}
+
+  /* ---- the lab ---- */
+  .lab{background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:20px;margin:20px 0;box-shadow:0 0 0 4px rgba(91,140,255,.08)}
+  .lab textarea{width:100%;height:96px;resize:vertical;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-family:var(--mono);font-size:13.5px;line-height:1.5}
+  .presets{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+  .chip{cursor:pointer;background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 12px;font-size:12.5px}
+  .chip:hover{color:var(--ink);border-color:var(--accent)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+  @media(max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px}
+  .stat .v{font-size:21px;font-weight:800}
+  .stat .k{font-size:11px;color:var(--muted);margin-top:2px}
+
+  h4.labh{margin:22px 0 8px;color:var(--ink);font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+  /* histogram */
+  .hist{display:flex;align-items:flex-end;gap:8px;height:170px;border-bottom:1px solid var(--line);padding-bottom:0}
+  .hcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+  .hcol .hb{width:80%;border-radius:5px 5px 0 0;min-height:2px;background:linear-gradient(180deg,var(--accent),#3a63c4)}
+  .hcol .hc{font-family:var(--mono);font-size:13px;margin-top:6px}
+  .hcol .hp{font-size:10.5px;color:var(--muted)}
+  .hcol .hn{font-size:10px;color:var(--muted);margin-bottom:4px}
+
+  /* bits/symbol comparison */
+  .cmp{position:relative;margin:8px 0 2px}
+  .crow{display:grid;grid-template-columns:120px 1fr 86px;align-items:center;gap:10px;margin:9px 0}
+  .crow .lab2{font-size:13px;color:var(--muted)}
+  .track{position:relative;height:22px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .track>div{height:100%;border-radius:5px}
+  .crow .num{font-family:var(--mono);font-size:13px;text-align:right}
+  .floor{position:absolute;top:0;bottom:18px;width:2px;background:repeating-linear-gradient(var(--accent2),var(--accent2) 4px,transparent 4px,transparent 8px)}
+  .floorlbl{position:absolute;font-size:11px;color:var(--accent2);transform:translateX(-50%);bottom:0}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{text-align:left;padding:5px 9px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600}
+  td.mono,th.mono{font-family:var(--mono)}
+
+  .svgwrap{background:var(--panel2);border:1px solid var(--line);border-radius:10px;margin-top:8px;overflow:hidden}
+  svg{width:100%;display:block}
+  button{cursor:pointer;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:600}
+  button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .footlinks{display:flex;justify-content:space-between;margin-top:46px;font-size:14px}
+  .footlinks a{color:var(--accent);text-decoration:none}
+  .big-save{font-size:15px}
+  .big-save b{color:var(--accent2)}
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="ee274.html">← Demos</a>
+  <h1>How Lossless Compression Works</h1>
+  <span class="tag">Interactive</span>
+</header>
+
+<article class="doc">
+
+  <div class="hero">
+    <h2>Make a file smaller — without losing a single bit.</h2>
+    <p>Text, music, and video are all just sequences of symbols stored as bits. <b>Lossless compression</b> is the art of writing the same information with fewer bits, so you can perfectly rebuild the original. Here's the whole idea — and a lab to try it on your own text.</p>
+  </div>
+
+  <!-- ===================== STEP 1 ===================== -->
+  <div class="step">Step 1</div>
+  <h3>Everything is bits</h3>
+  <p>A computer can only store <code>0</code>s and <code>1</code>s. To store letters, we agree on a <b>code</b>: a mapping from each symbol to a pattern of bits. Standard text uses ASCII, where every character is 8 bits:</p>
+  <div class="card">
+    <div class="bitdemo">
+      <span class="glyph">A</span><span class="arrow">→</span>
+      <span class="bword"><span class="b0">0</span><span class="b1">1</span><span class="b0">0</span><span class="b0">0</span><span class="b0">0</span><span class="b0">0</span><span class="b0">0</span><span class="b1">1</span></span>
+      <span class="arrow" style="margin:0 12px">&nbsp;</span>
+      <span class="glyph">B</span><span class="arrow">→</span>
+      <span class="bword"><span class="b0">0</span><span class="b1">1</span><span class="b0">0</span><span class="b0">0</span><span class="b0">0</span><span class="b0">0</span><span class="b1">1</span><span class="b0">0</span></span>
+    </div>
+  </div>
+  <p>But 8 bits buys you 256 different patterns. If your file only uses a handful of distinct symbols, that's wildly wasteful. With an alphabet of $k$ symbols, you only need enough bits to give each one a unique pattern:</p>
+  <p style="text-align:center">$\text{bits per symbol} = \lceil \log_2 k \rceil.$</p>
+  <p>Four symbols? $\lceil\log_2 4\rceil = 2$ bits each. Just <code>A</code> and <code>B</code>? One bit each. This is <b>fixed-length coding</b>, and it's the baseline to beat.</p>
+
+  <!-- ===================== STEP 2 ===================== -->
+  <div class="step">Step 2</div>
+  <h3>The trick: not every symbol is equally common</h3>
+  <p>In English, <code>e</code> and the space character appear constantly, while <code>z</code> and <code>q</code> are rare. So why spend the <i>same</i> number of bits on each? <b>Give common symbols short codes and rare symbols longer ones</b>, and the average shrinks.</p>
+  <div class="aside">Morse code figured this out in 1838: the most common English letter, <b>E</b>, is a single dot <code>·</code>, while <b>Q</b> is <code>— — · —</code>. Same idea, 180 years earlier.</div>
+  <p>To do this well, we need to know how often each symbol shows up — its <b>probability distribution</b>. Frequencies are the raw material of compression: everything downstream is built from them.</p>
+
+  <!-- ===================== STEP 3 ===================== -->
+  <div class="step">Step 3</div>
+  <h3>Entropy: the speed limit</h3>
+  <p>Here's the beautiful part. Once you know the distribution, there's a hard limit on how few bits per symbol <i>any</i> code can use, on average. It's called the <b>entropy</b>:</p>
+  <p style="text-align:center">$\displaystyle H = \sum_i p_i \,\log_2\frac{1}{p_i} \quad\text{bits per symbol.}$</p>
+  <p>Read $\log_2\frac{1}{p_i}$ as the <b>"surprise"</b> of seeing symbol $i$: rare symbols are surprising and cost more bits; common ones are predictable and cost less. Entropy is just the <i>average</i> surprise — and it's the best any compressor can do.</p>
+  <div class="aside"><b>The fine print:</b> this limit assumes each symbol is independent of the last (the "i.i.d." assumption). Real text isn't — <code>q</code> is almost always followed by <code>u</code> — so smart compressors that model patterns can beat single-symbol entropy. But it's the perfect north star for our first compressor.</div>
+
+  <!-- ===================== THE LAB ===================== -->
+  <div class="step">Step 4 · Your turn</div>
+  <h3>The compression lab</h3>
+  <p>Type or paste anything below. We'll measure its symbol frequencies, then race three approaches: the fixed-length baseline, the entropy limit, and a real <b>Huffman code</b> built live from your text.</p>
+
+  <div class="lab">
+    <textarea id="txt" spellcheck="false">the quick brown fox jumps over the lazy dog. the dog was not amused, but the fox did it again and again.</textarea>
+    <div class="presets" id="presets"></div>
+
+    <div class="stats">
+      <div class="stat"><div class="v" id="s-n">–</div><div class="k">symbols (length)</div></div>
+      <div class="stat"><div class="v" id="s-k">–</div><div class="k">distinct symbols</div></div>
+      <div class="stat"><div class="v" id="s-ratio">–</div><div class="k">Huffman vs ASCII</div></div>
+      <div class="stat"><div class="v" id="s-save">–</div><div class="k">space saved</div></div>
+    </div>
+
+    <h4 class="labh">Frequency histogram (top 10)</h4>
+    <div class="hist" id="hist"></div>
+
+    <h4 class="labh">Bits per symbol — the race</h4>
+    <div class="cmp" id="cmp"></div>
+    <div class="big-save" id="cmpnote" style="margin-top:10px"></div>
+
+    <h4 class="labh">Huffman code (built from your text)</h4>
+    <div class="row" style="margin-bottom:8px">
+      <button id="hufftoggle" class="ghost">Show the tree being built ▾</button>
+    </div>
+    <div id="treebox" class="svgwrap" style="display:none"><svg id="tree"></svg>
+      <div class="row" style="padding:10px;border-top:1px solid var(--line)">
+        <button id="back" class="ghost">◀</button><button id="play">▶ Play</button><button id="fwd" class="ghost">▶</button>
+        <span class="k" id="treestat" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+    </div>
+    <table id="codetab"><thead><tr><th>Symbol</th><th>Freq</th><th class="mono">Huffman code</th><th>Len</th><th>Fixed</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <p>Watch how the gap behaves: the more <b>skewed</b> your text (lots of repetition, few distinct symbols), the further Huffman drops below the fixed-length baseline — and the closer it hugs the entropy floor. Feed it something uniform, like random DNA, and all three nearly meet: there's simply less redundancy to exploit.</p>
+
+  <h3>What's next</h3>
+  <p>Huffman gives the best possible code when each symbol gets a whole number of bits. But you may have noticed it still can't quite reach the entropy floor — because a symbol that "deserves" 1.4 bits has to round up to 2. Beating that requires letting symbols share fractional bits, which is exactly what <b>arithmetic coding</b> and <b>ANS</b> do. More demos coming.</p>
+
+  <div class="footlinks">
+    <a href="ee274.html">← All demos</a>
+    <a href="huffman.html">Standalone Huffman demo →</a>
+  </div>
+</article>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const SVGNS="http://www.w3.org/2000/svg";
+function showsym(s){return s===" "?"␣":s==="\n"?"⏎":s==="\t"?"⇥":s;}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+const presets=[
+  ["English","the quick brown fox jumps over the lazy dog. the dog was not amused, but the fox did it again and again."],
+  ["Very repetitive","aaaaaaaaaaaaaaaaaaaabbbbbbbbbbcccccdddee"],
+  ["DNA (≈uniform)","ACGTTGCAACGTAGCTAGCTACGATCGATCGTAGCTACGATCGGCTAACGT"],
+  ["Mostly one letter","eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee tax"],
+  ["Your name?","Connor Ding — Stanford EE274"],
+];
+(function(){const p=$("#presets");presets.forEach(([l,v])=>{const b=document.createElement("span");b.className="chip";b.textContent=l;b.onclick=()=>{$("#txt").value=v;recompute();};p.appendChild(b);});})();
+
+/* ---------- Huffman ---------- */
+let UID=0;
+function huffman(freq){ // freq: Map sym->count ; returns {codes, lens, steps, merges, root}
+  UID=0;
+  const order=new Map([...freq.keys()].map((k,i)=>[k,i]));
+  let forest=[...freq.entries()].map(([s,f])=>({id:++UID,sym:s,freq:f,left:null,right:null}));
+  const key=n=>n.sym!=null?(order.get(n.sym)):n.id+1e6;
+  const cmp=(a,b)=>a.freq-b.freq||key(a)-key(b);
+  const states=[forest.slice()],merges=[];
+  while(forest.length>1){
+    forest.sort(cmp);
+    const a=forest[0],b=forest[1];
+    const par={id:++UID,sym:null,freq:a.freq+b.freq,left:a,right:b};
+    merges.push({a:a.id,b:b.id});
+    forest=forest.slice(2);forest.push(par);
+    states.push(forest.slice());
+  }
+  const root=forest[0];
+  const codes={},lens={};
+  if(root){
+    if(root.sym!=null){codes[root.sym]="0";lens[root.sym]=1;}
+    else (function w(n,c){if(n.sym!=null){codes[n.sym]=c;lens[n.sym]=c.length;return;}w(n.left,c+"0");w(n.right,c+"1");})(root,"");
+  }
+  return {codes,lens,states,merges,root};
+}
+
+/* ---------- state ---------- */
+let H={};  // huffman result
+let freqArr=[]; // [ [sym,count], ... ] sorted desc
+let N=0,k=0;
+
+function recompute(){
+  const text=$("#txt").value;
+  const fm=new Map();
+  for(const ch of text) fm.set(ch,(fm.get(ch)||0)+1);
+  N=text.length; k=fm.size;
+  freqArr=[...fm.entries()].sort((a,b)=>b[1]-a[1]);
+
+  if(N===0||k===0){blank();return;}
+
+  // metrics
+  const fixedBits=k<=1?1:Math.ceil(Math.log2(k));
+  let entropy=0; for(const[,c]of fm){const p=c/N;entropy+=-p*Math.log2(p);}
+  H=huffman(fm);
+  let huffTotal=0; for(const[s,c]of fm) huffTotal+=c*H.lens[s];
+  const huffAvg=huffTotal/N;
+  const asciiTotal=8*N, fixedTotal=fixedBits*N, entTotal=entropy*N;
+  const ratio=asciiTotal/huffTotal;
+  const saved=(1-huffTotal/asciiTotal)*100;
+
+  // stat cards
+  $("#s-n").textContent=N;
+  $("#s-k").textContent=k;
+  $("#s-ratio").textContent=ratio.toFixed(2)+"×";
+  $("#s-save").textContent=saved.toFixed(0)+"%";
+
+  // histogram
+  renderHist();
+
+  // comparison
+  renderCmp({ascii:8,fixed:fixedBits,huff:huffAvg,ent:entropy});
+  $("#cmpnote").innerHTML=
+    `Fixed-length spends <b>${fixedBits}</b> bits/symbol. Huffman averages <b>${huffAvg.toFixed(2)}</b> — `+
+    `the entropy floor is <b>${entropy.toFixed(2)}</b>. Huffman is <b>${(huffAvg-entropy).toFixed(2)}</b> bits above the limit, `+
+    `and shrinks the file <b>${saved.toFixed(0)}%</b> versus 8-bit ASCII.`;
+
+  // code table (top 10)
+  const tb=$("#codetab tbody");tb.innerHTML="";
+  freqArr.slice(0,10).forEach(([s,c])=>{
+    tb.insertAdjacentHTML("beforeend",
+      `<tr><td class="mono">${esc(showsym(s))}</td><td>${c}</td><td class="mono" style="color:var(--accent2)">${H.codes[s]}</td><td>${H.lens[s]}</td><td style="color:var(--muted)">${fixedBits}</td></tr>`);
+  });
+  if(k>10) tb.insertAdjacentHTML("beforeend",`<tr><td colspan="5" style="color:var(--muted)">…and ${k-10} more symbols</td></tr>`);
+
+  // tree
+  treeIdx=0; if($("#treebox").style.display!=="none") renderTree();
+}
+
+function blank(){
+  ["s-n","s-k","s-ratio","s-save"].forEach(id=>$("#"+id).textContent="–");
+  $("#hist").innerHTML="";$("#cmp").innerHTML="";$("#cmpnote").textContent="Type something above to begin.";
+  $("#codetab tbody").innerHTML="";$("#tree").innerHTML="";
+}
+
+function renderHist(){
+  const top=freqArr.slice(0,10);
+  const max=top[0][1];
+  const el=$("#hist");el.innerHTML="";
+  top.forEach(([s,c])=>{
+    const pct=(c/N*100);
+    el.insertAdjacentHTML("beforeend",
+      `<div class="hcol">
+        <div class="hn">${(c/N*100).toFixed(0)}%</div>
+        <div class="hb" style="height:${(c/max*100)}%"></div>
+        <div class="hc">${esc(showsym(s))}</div>
+        <div class="hp">${c}</div>
+      </div>`);
+  });
+}
+
+function renderCmp(b){
+  const scale=8; // 0..8 bits axis
+  const pos=v=>Math.min(100,v/scale*100);
+  const rows=[
+    ["ASCII baseline",b.ascii,"var(--muted)"],
+    ["Fixed-length",b.fixed,"var(--warn)"],
+    ["Huffman",b.huff,"linear-gradient(90deg,var(--accent),var(--accent2))"],
+  ];
+  let h='<div style="position:relative">';
+  rows.forEach(([lab,val,col])=>{
+    h+=`<div class="crow"><div class="lab2">${lab}</div>
+      <div class="track"><div style="width:${pos(val)}%;background:${col}"></div></div>
+      <div class="num">${val.toFixed(2)}</div></div>`;
+  });
+  h+=`</div>`;
+  $("#cmp").innerHTML=h;
+  // entropy floor line overlaid on the track column
+  const cmp=$("#cmp");
+  const floor=document.createElement("div");floor.className="floor";
+  // tracks start at 120px+10px gap; compute via the middle column width is fluid, so use a relative overlay inside each track instead:
+  // simpler: add a labeled marker under the rows
+  const note=document.createElement("div");
+  note.style.cssText="margin-top:4px;font-size:12px;color:var(--accent2)";
+  note.innerHTML=`▏ entropy floor = ${b.ent.toFixed(2)} bits/symbol (no code can beat this on average)`;
+  cmp.appendChild(note);
+}
+
+/* ---------- tree animation ---------- */
+let treeIdx=0,treeTimer=null;
+$("#hufftoggle").onclick=()=>{
+  const box=$("#treebox");const open=box.style.display!=="none";
+  box.style.display=open?"none":"block";
+  $("#hufftoggle").textContent=open?"Show the tree being built ▾":"Hide the tree ▴";
+  if(!open){treeIdx=0;renderTree();}
+};
+function layoutForest(forest){
+  let leafX=0,maxD=0;const pos=new Map();
+  function as(n,d){maxD=Math.max(maxD,d);if(!n.left&&!n.right){pos.set(n.id,{x:leafX++,d});return pos.get(n.id);}const L=as(n.left,d+1),R=as(n.right,d+1);const p={x:(L.x+R.x)/2,d};pos.set(n.id,p);return p;}
+  forest.forEach(t=>{as(t,0);leafX++;});
+  return {pos,leaves:Math.max(leafX-1,1),maxD};
+}
+function renderTree(){
+  if(!H.states){return;}
+  const forest=H.states[Math.min(treeIdx,H.states.length-1)]||[];
+  const merge=H.merges[treeIdx];
+  const hl=merge?new Set([merge.a,merge.b]):new Set();
+  const {pos,leaves,maxD}=layoutForest(forest);
+  const XS=48,YS=56,MX=30,MY=30,R=15;
+  const W=MX*2+leaves*XS, Ht=MY*2+maxD*YS+R;
+  const svg=$("#tree");svg.setAttribute("viewBox",`0 0 ${Math.max(W,300)} ${Math.max(Ht,120)}`);
+  svg.style.height=Math.min(Math.max(Ht,120),340)+"px";
+  const px=p=>MX+p.x*XS, py=p=>MY+p.d*YS;
+  const nodes=[],edges=[];
+  (function collect(list){list.forEach(function w(n){nodes.push(n);if(n.left){edges.push([n,n.left,"0"]);w(n.left);}if(n.right){edges.push([n,n.right,"1"]);w(n.right);}});})(forest);
+  let h="";
+  edges.forEach(([f,t])=>{const a=pos.get(f.id),b=pos.get(t.id);h+=`<line x1="${px(a)}" y1="${py(a)}" x2="${px(b)}" y2="${py(b)}" stroke="#3a3f5c" stroke-width="1.5"/>`;});
+  nodes.forEach(n=>{const p=pos.get(n.id),x=px(p),y=py(p);const leaf=n.sym!=null;
+    const fill=hl.has(n.id)?"#ffd34d":(leaf?"#2a6df4":"#3a3f5c");const tc=hl.has(n.id)?"#1b1b1b":"#fff";
+    h+=`<circle cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="rgba(255,255,255,.2)"/>`;
+    h+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="${leaf?11:10}" font-family="${leaf?'monospace':'sans-serif'}" font-weight="700" fill="${tc}">${leaf?esc(showsym(n.sym)):n.freq}</text>`;});
+  svg.innerHTML=h;
+  const total=H.states.length-1;
+  $("#treestat").textContent= forest.length===1? `Done — ${total} merges, ${k} leaves.` : `Step ${treeIdx}/${total} — merging the two smallest.`;
+}
+function tfwd(){if(treeIdx<H.states.length-1){treeIdx++;renderTree();}else tstop();}
+function tback(){if(treeIdx>0){treeIdx--;renderTree();}}
+function tstop(){if(treeTimer){clearInterval(treeTimer);treeTimer=null;}$("#play").textContent="▶ Play";}
+$("#fwd").onclick=()=>{tstop();tfwd();};
+$("#back").onclick=()=>{tstop();tback();};
+$("#play").onclick=()=>{if(treeTimer){tstop();return;}if(treeIdx>=H.states.length-1)treeIdx=0;$("#play").textContent="❚❚";treeTimer=setInterval(()=>{if(treeIdx>=H.states.length-1)tstop();tfwd();},650);};
+
+$("#txt").addEventListener("input",recompute);
+recompute();
+</script>
+</body>
+</html>
