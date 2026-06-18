@@ -88,6 +88,14 @@
   .big-save b{color:var(--accent2)}
   .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap;padding:0 10px 10px}
   .legend i{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px}
+  /* arithmetic widget */
+  .acg label{display:block;font-size:12.5px;margin:8px 0 2px;font-family:var(--mono);color:var(--muted)}
+  .acg .lr{display:flex;align-items:center;gap:10px}
+  .acg input[type=range]{flex:1}
+  .acg .pval{font-family:var(--mono);font-size:12.5px;width:42px;text-align:right;color:var(--ink)}
+  .acmsg{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px;font-family:var(--mono);font-size:15px;letter-spacing:3px}
+  .acres{font-size:14px;margin-top:14px;line-height:1.75;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .acres .num{font-family:var(--mono);color:var(--accent2)}
 </style>
 </head>
 <body>
@@ -195,12 +203,46 @@
 
   <p style="margin-top:20px">Watch how the gap behaves: the more <b>skewed</b> your text (lots of repetition, few distinct symbols), the further Huffman drops below the fixed-length baseline — and the closer it hugs the entropy floor. Feed it something uniform, like random DNA, and all three nearly meet: there's simply less redundancy to exploit.</p>
 
+  <!-- ===================== STEP 6 : ARITHMETIC ===================== -->
+  <div class="step">Step 6</div>
+  <h3>Arithmetic coding: sharing fractional bits</h3>
+  <p>Huffman is optimal — but only when each symbol gets a <i>whole number</i> of bits. A symbol that "deserves" 1.4 bits still costs 2, so there's up to a <b>1-bit-per-symbol</b> tax. <b>Arithmetic coding</b> sidesteps this entirely: it encodes the <i>whole message</i> as a single number, so the rounding happens just <b>once</b> for the entire file.</p>
+  <p>The idea: start with the interval $[0,1)$ and, for each symbol, <b>shrink it</b> to the sub-slice that symbol owns (each symbol gets a slice as wide as its probability). After the last symbol you're left with a tiny interval; sending <i>any</i> number inside it identifies the exact message. Crucially:</p>
+  <p style="margin-left:6px">• more probable message ⟶ bigger final interval ⟶ <b>fewer bits</b> to pin down.<br>
+     • the final interval's width is exactly $P(\text{message}) = \prod_i p(x_i)$, so the cost is $\approx \log_2\frac{1}{P(\text{message})}$ bits — the message's information content.</p>
+
+  <div class="lab acg">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="grid2">
+      <div>
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px">Symbol probabilities</div>
+        <div id="acsliders"></div>
+      </div>
+      <div>
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Message to encode</div>
+        <input class="acmsg" id="acmsg" value="BACB" spellcheck="false" />
+        <div class="presets" id="acpresets"></div>
+      </div>
+    </div>
+
+    <div class="svgwrap" style="margin-top:16px;background:transparent;border:none"><svg id="acsvg"></svg></div>
+
+    <div class="row" style="margin-top:6px">
+      <button id="acback" class="ghost">◀ Step</button>
+      <button id="acplay">▶ Play</button>
+      <button id="acstep" class="ghost">Step ▶</button>
+      <button id="acreset" class="ghost">Reset</button>
+    </div>
+    <div class="acres" id="acres"></div>
+  </div>
+
+  <p>Try the presets: with a <b>skewed, longer</b> message, arithmetic coding crushes Huffman, because Huffman pays its rounding tax on <i>every</i> symbol while arithmetic pays a fixed ~2-bit overhead <i>once</i>. This is why modern codecs (JPEG, H.264/H.265, zstd) lean on arithmetic-style coders.</p>
+
   <h3>What's next</h3>
-  <p>Huffman is optimal when each symbol gets a <i>whole number</i> of bits. But you may notice it still can't quite reach the entropy floor — a symbol that "deserves" 1.4 bits has to round up to 2. Beating that requires letting symbols share <i>fractional</i> bits, which is exactly what <b>arithmetic coding</b> and <b>ANS</b> do. More demos coming.</p>
+  <p>Arithmetic coding hits the entropy floor but is relatively slow. <b>ANS</b> (Asymmetric Numeral Systems) gets the same compression at Huffman-like speeds, which is why it powers Zstandard and LZMA. And so far we've assumed symbols are independent — real data has <i>patterns</i>, which <b>context modeling</b> and <b>LZ77</b> exploit. Those demos are coming next.</p>
 
   <div class="footlinks">
     <a href="ee274.html">← All demos</a>
-    <a href="https://stanforddatacompressionclass.github.io/notes/lossless_iid/intro.html" target="_blank">Course notes ↗</a>
+    <a href="https://stanforddatacompressionclass.github.io/notes/lossless_iid/arithmetic_coding.html" target="_blank">Course notes ↗</a>
   </div>
 </article>
 
@@ -372,6 +414,94 @@ $("#play").onclick=()=>{if(treeTimer){tstop();return;}if(treeIdx>=H.states.lengt
   $("#play").textContent="❚❚ Pause";
   const tick=()=>{if(treeIdx>=H.states.length-1){tstop();return;}tfwd();treeTimer=setTimeout(tick,1700-+$("#speed").value);};
   treeTimer=setTimeout(tick,1700-+$("#speed").value);};
+
+/* ---------- arithmetic coding (Step 6) ---------- */
+(function(){
+  const syms=["A","B","C"], COL={A:"#5b8cff",B:"#46d1a2",C:"#ffb454"};
+  let w={A:30,B:50,C:20}, step=0, P={}, cumLo={}, hlen={}, msg=[], steps=[], finalLo=0, finalHi=1, timer=null;
+  const sb=$("#acsliders");
+  syms.forEach(s=>{
+    sb.insertAdjacentHTML("beforeend",
+      `<label style="color:${COL[s]}">P(${s})</label><div class="lr"><input type="range" min="1" max="98" value="${w[s]}" id="ac-${s}"><span class="pval" id="acp-${s}"></span></div>`);
+    $("#ac-"+s).addEventListener("input",e=>{w[s]=+e.target.value;build(true);});
+  });
+  const acpre=[["Course example",{A:30,B:50,C:20},"BACB"],["Skewed, longer",{A:8,B:84,C:8},"BBBBABB"],["Even split",{A:33,B:34,C:33},"ACBAC"]];
+  const pc=$("#acpresets");
+  acpre.forEach(([l,pp,mm])=>{const b=document.createElement("span");b.className="chip";b.textContent=l;
+    b.onclick=()=>{w={...pp};syms.forEach(s=>$("#ac-"+s).value=w[s]);$("#acmsg").value=mm;step=0;build(true);};pc.appendChild(b);});
+  $("#acmsg").addEventListener("input",()=>build(true));
+  $("#acstep").onclick=()=>{stop();if(step<msg.length){step++;render();}};
+  $("#acback").onclick=()=>{stop();if(step>0){step--;render();}};
+  $("#acreset").onclick=()=>{stop();step=0;render();};
+  $("#acplay").onclick=()=>{if(timer){stop();return;}if(step>=msg.length)step=0;$("#acplay").textContent="❚❚ Pause";
+    timer=setInterval(()=>{if(step>=msg.length){stop();return;}step++;render();},950);};
+  function stop(){if(timer){clearInterval(timer);timer=null;}$("#acplay").textContent="▶ Play";}
+  function fracBits(x,L){let s="",v=x;for(let i=0;i<L;i++){v*=2;if(v>=1){s+="1";v-=1;}else s+="0";}return s;}
+
+  function build(keep){
+    const tot=syms.reduce((a,s)=>a+w[s],0)||1;
+    P={};syms.forEach(s=>P[s]=w[s]/tot);
+    syms.forEach(s=>$("#acp-"+s).textContent=P[s].toFixed(2));
+    cumLo={};let c=0;syms.forEach(s=>{cumLo[s]=c;c+=P[s];});
+    const fm=new Map(syms.map(s=>[s,Math.max(P[s],1e-9)]));
+    hlen=huffman(fm).lens;
+    let raw=($("#acmsg").value.toUpperCase().match(/[ABC]/g)||[]).slice(0,8);
+    if($("#acmsg").value!==raw.join("")) $("#acmsg").value=raw.join("");
+    msg=raw;
+    steps=[];let lo=0,hi=1;
+    for(const s of msg){steps.push({s,lo,hi});const r=hi-lo;const nlo=lo+r*cumLo[s];lo=nlo;hi=nlo+r*P[s];}
+    finalLo=lo;finalHi=hi;
+    if(step>msg.length)step=msg.length;
+    render();
+  }
+
+  function render(){
+    const svg=$("#acsvg"), m=msg.length;
+    if(m===0){svg.innerHTML="";$("#acres").innerHTML="Type a short message using A, B, C.";return;}
+    const last= step<m? step : m-1;
+    const X0=70,X1=930,BW=860,bandH=40,vgap=38,top=16;
+    const Hsvg= top + (last+1)*bandH + last*vgap + 14;
+    svg.setAttribute("viewBox",`0 0 1000 ${Hsvg}`);
+    svg.setAttribute("preserveAspectRatio","xMidYMin meet");
+    let h="";
+    for(let i=0;i<=last;i++){
+      const y=top+i*(bandH+vgap), {lo,hi}=steps[i], chosen= i<step? msg[i]:null;
+      syms.forEach(s=>{
+        const sx=X0+cumLo[s]*BW, sw=P[s]*BW, isC=chosen===s;
+        const op= chosen? (isC?1:0.16) : 0.5;
+        h+=`<rect x="${sx}" y="${y}" width="${sw}" height="${bandH}" fill="${COL[s]}" opacity="${op}" stroke="${isC?'#fff':'rgba(255,255,255,.15)'}" stroke-width="${isC?2:0.5}" rx="3"/>`;
+        if(sw>22) h+=`<text x="${sx+sw/2}" y="${y+bandH/2+4}" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="${isC?'#fff':'rgba(255,255,255,.65)'}">${s}</text>`;
+      });
+      h+=`<text x="${X0-7}" y="${y+bandH/2+4}" text-anchor="end" font-size="10" font-family="monospace" fill="#9aa0bd">${lo.toFixed(4)}</text>`;
+      h+=`<text x="${X1+7}" y="${y+bandH/2+4}" text-anchor="start" font-size="10" font-family="monospace" fill="#9aa0bd">${hi.toFixed(4)}</text>`;
+      if(i<step && i+1<=last){
+        const sx=X0+cumLo[chosen]*BW, sw=P[chosen]*BW, ny=y+bandH+vgap;
+        h+=`<path d="M ${sx} ${y+bandH} L ${X0} ${ny} L ${X1} ${ny} L ${sx+sw} ${y+bandH} Z" fill="${COL[chosen]}" opacity="0.10"/>`;
+        h+=`<line x1="${sx}" y1="${y+bandH}" x2="${X0}" y2="${ny}" stroke="${COL[chosen]}" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>`;
+        h+=`<line x1="${sx+sw}" y1="${y+bandH}" x2="${X1}" y2="${ny}" stroke="${COL[chosen]}" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>`;
+      }
+    }
+    svg.innerHTML=h;
+
+    const lo= step<m? steps[step].lo : finalLo, hi= step<m? steps[step].hi : finalHi;
+    const width=hi-lo;
+    if(step<m){
+      $("#acres").innerHTML=`Encoded <b>${msg.slice(0,step).join("")||"— (nothing yet)"}</b> → interval <span class="num">[${lo.toFixed(5)}, ${hi.toFixed(5)})</span>`+
+        `, width ${width.toExponential(2)} ≈ ${(-Math.log2(width)).toFixed(2)} bits so far. ${step<m?'Press <b>Step ▶</b> to encode '+msg[step]+'.':''}`;
+    }else{
+      const W=finalHi-finalLo, Z=(finalLo+finalHi)/2, info=-Math.log2(W), kbits=Math.ceil(info)+1;
+      let hb=0;msg.forEach(s=>hb+=hlen[s]);
+      let ent=0,havg=0;syms.forEach(s=>{ent+=P[s]*-Math.log2(P[s]);havg+=P[s]*hlen[s];});
+      const verdict= kbits<hb? `arithmetic wins by ${hb-kbits} bit${hb-kbits>1?'s':''}` : kbits>hb? `Huffman is ${kbits-hb} bit${kbits-hb>1?'s':''} shorter <i>here</i> (overhead dominates short messages)` : `a tie on this short message`;
+      $("#acres").innerHTML=
+        `<b>Done.</b> Final interval <span class="num">[${finalLo.toFixed(5)}, ${finalHi.toFixed(5)})</span>, width = P(message) = ${W.toExponential(2)}.<br>`+
+        `Send Z = ${Z.toFixed(5)} = <span class="num">0.${fracBits(Z,kbits)}</span>, truncated to k = ⌈log₂(1/width)⌉+1 = <b>${kbits} bits</b>.<br>`+
+        `This ${m}-symbol message → arithmetic <b>${kbits} bits</b> vs Huffman <b>${hb} bits</b> · ${verdict}.<br>`+
+        `<span style="color:var(--muted)">Per symbol, the fixed ~2-bit overhead vanishes as the message grows: arithmetic → entropy <b>${ent.toFixed(3)}</b> bits/sym, while Huffman is stuck at <b>${havg.toFixed(3)}</b>.</span>`;
+    }
+  }
+  build(true);
+})();
 
 $("#txt").addEventListener("input",recompute);
 recompute();
