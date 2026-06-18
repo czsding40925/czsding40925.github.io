@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Introduction to Lossless Coding — Interactive Notes (EE274)</title>
+<style>
+  :root{
+    --bg:#0f1220;--panel:#171a2b;--panel2:#1e2238;--ink:#e7e9f3;--muted:#9aa0bd;
+    --accent:#5b8cff;--accent2:#46d1a2;--warn:#ffb454;--bad:#ff6b6b;--line:#2b3050;
+    --A:#5b8cff;--B:#46d1a2;--C:#ffb454;--D:#c98bff;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65}
+  header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;position:sticky;top:0;background:rgba(15,18,32,.92);backdrop-filter:blur(6px);z-index:5}
+  header a.home{color:var(--muted);text-decoration:none;font-size:13px}
+  header h1{font-size:18px;margin:0;font-weight:650}
+  header .tag{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+  header a.src{color:var(--accent);text-decoration:none;font-size:13px;margin-left:auto}
+  .doc{max-width:760px;margin:0 auto;padding:28px 24px 80px}
+  h2{font-size:22px;margin:38px 0 10px;padding-top:6px}
+  h3{font-size:16px;color:var(--accent2);margin:26px 0 6px}
+  p{margin:12px 0}
+  code{font-family:var(--mono);background:var(--panel2);padding:1px 5px;border-radius:5px;font-size:.92em}
+  .lead{font-size:17px;color:#cfd3ec}
+  blockquote{border-left:3px solid var(--accent);margin:16px 0;padding:6px 16px;background:var(--panel);border-radius:0 8px 8px 0;color:#cfd3ec}
+  .widget{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:20px 0}
+  .widget .wtitle{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent2);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .widget .wtitle::before{content:"◆";color:var(--accent)}
+  .quiz{background:linear-gradient(180deg,rgba(91,140,255,.08),transparent);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:18px 0}
+  .quiz summary{cursor:pointer;font-weight:650;color:var(--warn)}
+  .quiz[open] summary{margin-bottom:8px}
+  .keyidea{background:rgba(70,209,162,.08);border:1px solid var(--accent2);border-radius:12px;padding:14px 16px;margin:20px 0}
+  .keyidea b{color:var(--accent2)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0}
+  th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600}
+  td.mono,th.mono{font-family:var(--mono)}
+  button{cursor:pointer;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:600}
+  button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .chip{cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-family:var(--mono);user-select:none}
+  .chip.on{color:#fff}
+  .chip[data-s="A"].on{background:var(--A);border-color:var(--A)}
+  .chip[data-s="B"].on{background:var(--B);border-color:var(--B);color:#06241a}
+  .chip[data-s="C"].on{background:var(--C);border-color:var(--C);color:#3a2700}
+  .chip[data-s="D"].on{background:var(--D);border-color:var(--D)}
+  .chip.off{background:var(--panel2);color:var(--muted);opacity:.6}
+  .big{font-size:30px;font-weight:800}
+  .big small{font-size:14px;font-weight:600;color:var(--muted)}
+  .bar{height:14px;border-radius:7px;background:var(--panel2);overflow:hidden;border:1px solid var(--line);position:relative}
+  .bar>div{height:100%}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+  .sliders label{display:block;font-size:13px;margin:10px 0 2px;font-family:var(--mono)}
+  .sliders .lr{display:flex;align-items:center;gap:10px}
+  .sliders input[type=range]{flex:1}
+  .pval{font-family:var(--mono);font-size:13px;width:54px;text-align:right;color:var(--muted)}
+  .bits{font-family:var(--mono);font-size:15px;letter-spacing:1px;word-break:break-all;line-height:2}
+  .bit{padding:1px 0}
+  .seg{padding:2px 4px;border-radius:4px;margin-right:2px}
+  .segA{background:rgba(91,140,255,.3)}.segB{background:rgba(70,209,162,.3)}
+  .segC{background:rgba(255,180,84,.3)}.segD{background:rgba(201,139,255,.3)}
+  .cursor{outline:2px solid var(--warn);border-radius:3px;background:rgba(255,211,77,.25)}
+  .decoded{font-family:var(--mono);font-size:18px;letter-spacing:3px;min-height:26px}
+  .ed-in{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;font-family:var(--mono)}
+  .ctab input{width:90px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:var(--mono)}
+  .verdict{font-weight:800;font-size:15px}
+  .ok{color:var(--accent2)}.no{color:var(--bad)}
+  .hint{font-size:13px;color:var(--muted)}
+  .footlinks{display:flex;justify-content:space-between;margin-top:40px;font-size:14px}
+  .footlinks a{color:var(--accent);text-decoration:none}
+  sub{font-size:.75em}
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="index.html">← Demos</a>
+  <h1>1.1 · Introduction to Lossless Coding</h1>
+  <span class="tag">Interactive Notes</span>
+  <a class="src" href="https://stanforddatacompressionclass.github.io/notes/lossless_iid/intro.html" target="_blank">Original ↗</a>
+</header>
+
+<article class="doc">
+  <p class="lead">We use data compression thousands of times a day — every text, image, and video is compressed before it travels between devices (<code>GZIP</code>, <code>JPEG</code>, <code>PNG</code>, <code>H264</code>…). These schemes look domain-specific, but they share deep, common ideas. Our goal: build intuition for those fundamentals.</p>
+
+  <p>Let's start with a deliberately simple scenario.</p>
+  <blockquote>We have a large text file whose every character is drawn <b>independently and uniformly</b> from S = {A, B, C, D}, i.e. P(A) = P(B) = P(C) = P(D) = ¼. Say the file has 1,000,000 letters.</blockquote>
+
+  <p>Stored as ASCII, each symbol takes <b>8 bits</b>, so the file is 1,000,000 bytes. But the four ASCII codes all begin with the same <code>1000…</code> — redundant when we only have four symbols. The natural question: <b>can we make the file smaller, losslessly?</b> We restrict ourselves to <i>symbol codes</i> — a fixed binary <i>codeword</i> per symbol.</p>
+
+  <h2>Fixed-bitwidth encoding</h2>
+  <p>With only <i>k</i> distinct symbols we need just <b>⌈log₂ k⌉</b> bits each. Drop unused symbols and the cost shrinks. Toggle which symbols actually appear:</p>
+
+  <div class="widget" id="w1">
+    <div class="wtitle">Fixed-bitwidth explorer</div>
+    <div class="row" id="w1chips">
+      <span class="chip on" data-s="A">A</span>
+      <span class="chip on" data-s="B">B</span>
+      <span class="chip on" data-s="C">C</span>
+      <span class="chip on" data-s="D">D</span>
+    </div>
+    <div class="grid2" style="margin-top:14px;align-items:center">
+      <div>
+        <div class="big"><span id="w1bits">2</span> <small>bits / symbol</small></div>
+        <div class="hint" id="w1formula">k = 4 distinct symbols → ⌈log₂ 4⌉ = 2 bits</div>
+        <div style="margin-top:10px" class="big"><span id="w1ratio">4.0×</span> <small>smaller than 8-bit ASCII</small></div>
+      </div>
+      <table id="w1tab"><thead><tr><th>Symbol</th><th class="mono">Code</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <p>So a uniform 4-symbol file compresses 4× for free. But this only helps when symbols are <i>completely absent</i>. What if every symbol appears, just in very different proportions?</p>
+
+  <details class="quiz"><summary>Quiz 2 — Beyond fixed bitwidth</summary>
+    With P(A) = P(B) = 0.49 and P(C) = P(D) = 0.01, can a symbol code beat <code>2 bits/symbol</code>?
+    <p style="margin-bottom:0">Fixed-width can't: it always spends ⌈log₂ 4⌉ = 2 bits regardless of probabilities. But intuitively we mostly see A and B, so we'd like to approach <code>1 bit/symbol</code>. The fix: <b>variable-length codes</b> — short codewords for frequent symbols, longer for rare ones.</p>
+  </details>
+
+  <h2>Variable-length codes</h2>
+  <p>Here is one such code. Note A is now a single bit, while C and D grow to three:</p>
+
+  <div class="widget" id="w2">
+    <div class="wtitle">Average code length E[L]</div>
+    <table style="max-width:320px"><thead><tr><th>Symbol</th><th class="mono">Code</th><th>Length</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--A)">A</td><td class="mono">0</td><td>1</td></tr>
+        <tr><td style="color:var(--B)">B</td><td class="mono">10</td><td>2</td></tr>
+        <tr><td style="color:var(--C)">C</td><td class="mono">110</td><td>3</td></tr>
+        <tr><td style="color:var(--D)">D</td><td class="mono">111</td><td>3</td></tr>
+      </tbody></table>
+    <p class="hint" style="margin-top:4px">Drag the probabilities (auto-normalized) and watch the average code length E[L] = Σ p·len.</p>
+    <div class="sliders" id="w2sliders"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="ghost" id="w2preset">Set 0.49 / 0.49 / 0.01 / 0.01</button>
+      <button class="ghost" id="w2unif">Set uniform ¼ each</button>
+    </div>
+    <div class="grid2" style="margin-top:16px;align-items:center">
+      <div class="big"><span id="w2el">–</span> <small>bits / symbol (E[L])</small></div>
+      <div>
+        <div class="hint" style="margin-bottom:4px">vs fixed 2 bits/symbol</div>
+        <div class="bar"><div id="w2bar" style="background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
+        <div class="hint" id="w2save" style="margin-top:4px"></div>
+      </div>
+    </div>
+  </div>
+
+  <p>With the 0.49 / 0.49 / 0.01 / 0.01 split this gives E[L] = 1.53 bits/symbol — worse than 2 in the <i>worst</i> case (C, D cost 3), but better <i>on average</i>. Exactly the trade we wanted.</p>
+
+  <h2>Why is this even decodable?</h2>
+  <p>Fixed-width decoding was trivial: chop the stream every 2 bits. With variable lengths we don't know where one codeword ends and the next begins. Let's encode a string and then decode it bit-by-bit to see what makes it work.</p>
+
+  <div class="widget" id="w3">
+    <div class="wtitle">Encode &amp; decode walkthrough</div>
+    <label class="hint">Input (letters A–D):</label>
+    <input class="ed-in" id="w3in" value="ABCADBBA" spellcheck="false" />
+    <div class="row" style="margin-top:8px">
+      <button id="w3enc" class="ghost">Encode</button>
+      <button id="w3step">Decode ▶ step</button>
+      <button id="w3play">Auto-decode</button>
+      <button id="w3reset" class="ghost">Reset</button>
+    </div>
+    <h3 style="margin-top:16px">Encoded bitstream</h3>
+    <div class="bits" id="w3bits"></div>
+    <h3>Decoder</h3>
+    <div class="hint" id="w3status">Press <b>Encode</b>, then step the decoder.</div>
+    <div class="decoded" id="w3out"></div>
+  </div>
+
+  <p>The decoder reads bits until the accumulated string matches a codeword, emits that symbol, and resets. It works because <b>no codeword is a prefix of another</b> — the moment we match, we can commit with zero ambiguity, without peeking at future bits.</p>
+
+  <div class="keyidea"><b>Key idea — Prefix-free codes.</b> If no codeword is a prefix of any other, the symbol code is <b>prefix-free</b> (a.k.a. <i>instantaneous</i>). Prefix-free codes are always losslessly and instantaneously decodable.</div>
+
+  <p>Prefix-freeness is a <i>sufficient</i> condition, not the only way to be lossless — but it gives the cleanest decoder. Test codes below; the second preset is lossless yet <i>not</i> prefix-free, which breaks the simple decoder.</p>
+
+  <div class="widget" id="w4">
+    <div class="wtitle">Prefix-free checker</div>
+    <table class="ctab" id="w4tab"><thead><tr><th>Symbol</th><th>Codeword</th></tr></thead><tbody></tbody></table>
+    <div class="row" style="margin-top:10px">
+      <button class="ghost" id="w4good">Prefix-free example</button>
+      <button class="ghost" id="w4bad">Non-prefix-free example</button>
+    </div>
+    <div style="margin-top:14px" class="verdict" id="w4verdict"></div>
+    <div class="hint" id="w4detail"></div>
+  </div>
+
+  <details class="quiz"><summary>Quiz 4 — Decoding a non-prefix-free code</summary>
+    The code A=<code>0</code>, B=<code>01</code>, C=<code>011</code>, D=<code>111</code> is still uniquely decodable, but the greedy decoder fails (it commits to B as soon as it sees <code>01</code>). <i>Hint: try decoding from the reverse direction.</i> Reading the stream back-to-front, each codeword becomes a suffix that <i>is</i> unambiguous.
+  </details>
+
+  <h2>Next up</h2>
+  <p>We turned a non-uniform source from 2 → 1.53 bits/symbol with a variable-length prefix-free code. Next: turning this decoder into an efficient algorithm, and how to <i>design</i> prefix-free codes for the best compression — leading to the <a href="https://stanforddatacompressionclass.github.io/notes/lossless_iid/kraft_ineq_and_optimality.html" target="_blank" style="color:var(--accent)">Kraft inequality</a> and <a href="huffman.html" style="color:var(--accent)">Huffman coding →</a></p>
+
+  <div class="footlinks">
+    <a href="index.html">← All demos</a>
+    <a href="huffman.html">Huffman coding demo →</a>
+  </div>
+</article>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const COL={A:"var(--A)",B:"var(--B)",C:"var(--C)",D:"var(--D)"};
+
+/* ---------- Widget 1: fixed bitwidth ---------- */
+(function(){
+  const present={A:true,B:true,C:true,D:true};
+  function update(){
+    const on=Object.keys(present).filter(s=>present[s]);
+    const k=on.length;
+    const bits=k<=1?0:Math.ceil(Math.log2(k));
+    $("#w1bits").textContent=bits;
+    $("#w1formula").textContent= k<=1
+      ? `k = ${k} symbol → only one option, 0 bits needed (degenerate)`
+      : `k = ${k} distinct symbols → ⌈log₂ ${k}⌉ = ${bits} bits`;
+    const ratio=bits>0?(8/bits):Infinity;
+    $("#w1ratio").textContent= bits>0? ratio.toFixed(ratio%1?1:0)+"×" : "∞";
+    const tb=$("#w1tab tbody");tb.innerHTML="";
+    on.forEach((s,i)=>{
+      const code=bits>0? i.toString(2).padStart(bits,"0") : "(none)";
+      tb.insertAdjacentHTML("beforeend",`<tr><td style="color:${COL[s]}">${s}</td><td class="mono">${code}</td></tr>`);
+    });
+  }
+  $("#w1chips").addEventListener("click",e=>{
+    const c=e.target.closest(".chip");if(!c)return;
+    const s=c.dataset.s;
+    const on=Object.values(present).filter(Boolean).length;
+    if(present[s]&&on<=1)return; // keep at least one
+    present[s]=!present[s];
+    c.classList.toggle("on",present[s]);c.classList.toggle("off",!present[s]);
+    update();
+  });
+  update();
+})();
+
+/* ---------- Widget 2: average length ---------- */
+(function(){
+  const syms=["A","B","C","D"], len={A:1,B:2,C:3,D:3};
+  let w={A:49,B:49,C:1,D:1};
+  const box=$("#w2sliders");
+  syms.forEach(s=>{
+    box.insertAdjacentHTML("beforeend",
+      `<label style="color:${COL[s]}">P(${s})</label>
+       <div class="lr"><input type="range" min="0" max="100" value="${w[s]}" id="w2-${s}">
+       <span class="pval" id="w2p-${s}"></span></div>`);
+    $("#w2-"+s).addEventListener("input",e=>{w[s]=+e.target.value;update();});
+  });
+  function update(){
+    const tot=syms.reduce((a,s)=>a+w[s],0)||1;
+    let el=0;
+    syms.forEach(s=>{const p=w[s]/tot;el+=p*len[s];$("#w2p-"+s).textContent=p.toFixed(3);});
+    $("#w2el").textContent=el.toFixed(3);
+    const pct=Math.max(0,Math.min(100,(el/2)*100));
+    const better=el<2;
+    $("#w2bar").style.width=pct.toFixed(1)+"%";
+    $("#w2bar").style.background= better
+      ? "linear-gradient(90deg,var(--accent),var(--accent2))"
+      : "linear-gradient(90deg,var(--warn),var(--bad))";
+    $("#w2save").textContent= better
+      ? `${(2-el).toFixed(3)} bits/symbol better than fixed-width.`
+      : `${(el-2).toFixed(3)} bits/symbol worse than fixed-width here.`;
+  }
+  $("#w2preset").onclick=()=>{w={A:49,B:49,C:1,D:1};syms.forEach(s=>$("#w2-"+s).value=w[s]);update();};
+  $("#w2unif").onclick=()=>{w={A:25,B:25,C:25,D:25};syms.forEach(s=>$("#w2-"+s).value=w[s]);update();};
+  update();
+})();
+
+/* ---------- Widget 3: encode / decode ---------- */
+(function(){
+  const code={A:"0",B:"10",C:"110",D:"111"};
+  let bits="", segs=[], di=0, acc="", out="", timer=null;
+  function encode(){
+    const raw=($("#w3in").value.toUpperCase().match(/[ABCD]/g)||[]);
+    $("#w3in").value=raw.join("");
+    bits="";segs=[];
+    raw.forEach(s=>{segs.push({s,code:code[s]});bits+=code[s];});
+    di=0;acc="";out="";
+    renderBits(-1);
+    $("#w3out").textContent="";
+    $("#w3status").innerHTML=raw.length?`Encoded <b>${raw.length}</b> symbols into <b>${bits.length}</b> bits. Now step the decoder.`:"Enter some A–D letters.";
+  }
+  function renderBits(cursor){
+    // color by original segments, underline the bit being read
+    let html="",idx=0;
+    segs.forEach(({s,code})=>{
+      let seg="";
+      for(let j=0;j<code.length;j++){
+        const cls=idx===cursor?"bit cursor":"bit";
+        seg+=`<span class="${cls}">${code[j]}</span>`;idx++;
+      }
+      html+=`<span class="seg seg${s}" title="${s}">${seg}</span>`;
+    });
+    $("#w3bits").innerHTML=html||'<span class="hint">— press Encode —</span>';
+  }
+  function step(){
+    if(!bits){encode();return;}
+    if(di>=bits.length){$("#w3status").innerHTML="<b>Done.</b> Stream fully decoded — each match was unambiguous because the code is prefix-free.";stop();return;}
+    acc+=bits[di];
+    renderBits(di);
+    di++;
+    const match=Object.keys(code).find(s=>code[s]===acc);
+    if(match){
+      out+=match;
+      $("#w3out").innerHTML=[...out].map(s=>`<span style="color:${COL[s]}">${s}</span>`).join("");
+      $("#w3status").innerHTML=`Read <code>${acc}</code> → matches <b>${match}</b>. Commit and reset buffer.`;
+      acc="";
+    }else{
+      $("#w3status").innerHTML=`Buffer <code>${acc}</code> — no codeword yet, read another bit…`;
+    }
+  }
+  function play(){if(timer){stop();return;}if(di>=bits.length){encode();}$("#w3play").textContent="❚❚ Pause";timer=setInterval(()=>{if(di>=bits.length){stop();}step();},700);}
+  function stop(){if(timer){clearInterval(timer);timer=null;}$("#w3play").textContent="Auto-decode";}
+  $("#w3enc").onclick=()=>{stop();encode();};
+  $("#w3step").onclick=()=>{stop();step();};
+  $("#w3play").onclick=play;
+  $("#w3reset").onclick=()=>{stop();di=0;acc="";out="";$("#w3out").textContent="";renderBits(-1);$("#w3status").textContent="Reset. Press step to decode again.";};
+  encode();
+})();
+
+/* ---------- Widget 4: prefix-free checker ---------- */
+(function(){
+  const syms=["A","B","C","D"];
+  let codes={A:"0",B:"10",C:"110",D:"111"};
+  const tb=$("#w4tab tbody");
+  syms.forEach(s=>{
+    tb.insertAdjacentHTML("beforeend",
+      `<tr><td style="color:${COL[s]}">${s}</td><td><input id="w4-${s}" value="${codes[s]}" spellcheck="false"></td></tr>`);
+    $("#w4-"+s).addEventListener("input",update);
+  });
+  function read(){syms.forEach(s=>codes[s]=$("#w4-"+s).value.trim());}
+  function update(){
+    read();
+    // validate binary
+    const bad=syms.filter(s=>codes[s]===""||/[^01]/.test(codes[s]));
+    if(bad.length){
+      $("#w4verdict").innerHTML=`<span class="no">⚠ Codewords must be non-empty binary strings.</span>`;
+      $("#w4detail").textContent="Fix: "+bad.join(", ");
+      return;
+    }
+    const conflicts=[];
+    for(const a of syms)for(const b of syms){
+      if(a!==b && codes[b].startsWith(codes[a])) conflicts.push([a,b]);
+    }
+    if(conflicts.length===0){
+      $("#w4verdict").innerHTML=`<span class="ok">✓ Prefix-free — instantaneously decodable.</span>`;
+      $("#w4detail").textContent="No codeword is a prefix of another.";
+    }else{
+      $("#w4verdict").innerHTML=`<span class="no">✗ Not prefix-free.</span>`;
+      $("#w4detail").innerHTML=conflicts.map(([a,b])=>
+        `<code>${codes[a]}</code> (${a}) is a prefix of <code>${codes[b]}</code> (${b})`).join("; ");
+    }
+  }
+  $("#w4good").onclick=()=>{codes={A:"0",B:"10",C:"110",D:"111"};syms.forEach(s=>$("#w4-"+s).value=codes[s]);update();};
+  $("#w4bad").onclick=()=>{codes={A:"0",B:"01",C:"011",D:"111"};syms.forEach(s=>$("#w4-"+s).value=codes[s]);update();};
+  update();
+})();
+</script>
+</body>
+</html>
