@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Huffman Coding — Interactive Demo (EE274)</title>
+<style>
+  :root{
+    --bg:#0f1220; --panel:#171a2b; --panel2:#1e2238; --ink:#e7e9f3; --muted:#9aa0bd;
+    --accent:#5b8cff; --accent2:#46d1a2; --warn:#ffb454; --leaf:#2a6df4; --node:#3a3f5c;
+    --hl:#ffd34d; --edge:#5a6080; --line:#2b3050;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  header h1{font-size:20px;margin:0;font-weight:650}
+  header .tag{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+  header a{color:var(--accent);text-decoration:none;font-size:13px;margin-left:auto}
+  .wrap{display:grid;grid-template-columns:320px 1fr;gap:0;min-height:calc(100vh - 61px)}
+  @media(max-width:860px){.wrap{grid-template-columns:1fr}}
+  .side{background:var(--panel);border-right:1px solid var(--line);padding:18px;overflow:auto}
+  .main{padding:16px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+  label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}
+  textarea{width:100%;height:78px;resize:vertical;background:var(--panel2);color:var(--ink);border:1px solid var(--line);
+    border-radius:10px;padding:10px;font-family:var(--mono);font-size:13px}
+  .presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{cursor:pointer;background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;padding:4px 10px;font-size:12px}
+  .chip:hover{color:var(--ink);border-color:var(--accent)}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  button{cursor:pointer;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:9px 14px;
+    font-size:13px;font-weight:600}
+  button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .speed{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;color:var(--muted)}
+  .speed input{flex:1}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .stat .v{font-size:18px;font-weight:700}
+  .stat .k{font-size:11px;color:var(--muted)}
+  .bar{height:10px;border-radius:6px;background:var(--panel2);overflow:hidden;margin-top:6px;border:1px solid var(--line)}
+  .bar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+  th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600}
+  td.code,td.sym{font-family:var(--mono)}
+  td.code{color:var(--accent2)}
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;flex:1;min-height:340px;position:relative;overflow:hidden}
+  svg{width:100%;height:100%;display:block}
+  .status{font-size:13px;color:var(--muted);min-height:20px}
+  .status b{color:var(--ink)}
+  .legend{display:flex;gap:16px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+  h3{font-size:13px;margin:18px 0 0;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .edge-label{font-family:var(--mono);font-size:12px;fill:var(--muted)}
+  .node-circle{transition:transform .35s ease, opacity .35s ease}
+</style>
+</head>
+<body>
+<header>
+  <h1>Huffman Coding</h1>
+  <span class="tag">EE274 · Interactive Demo</span>
+  <a href="https://stanforddatacompressionclass.github.io/notes/lossless_iid/huffman.html" target="_blank">Course notes ↗</a>
+</header>
+
+<div class="wrap">
+  <aside class="side">
+    <label for="txt">Input text</label>
+    <textarea id="txt" spellcheck="false">huffman coding</textarea>
+    <div class="presets" id="presets"></div>
+
+    <div class="btnrow">
+      <button id="build">Build tree</button>
+      <button id="reset" class="ghost">Reset</button>
+    </div>
+    <div class="btnrow">
+      <button id="back" class="ghost">◀ Step</button>
+      <button id="play">▶ Play</button>
+      <button id="fwd" class="ghost">Step ▶</button>
+    </div>
+    <div class="speed">
+      <span>Slow</span><input id="speed" type="range" min="200" max="1600" value="800" step="100"><span>Fast</span>
+    </div>
+
+    <h3>Compression</h3>
+    <div class="stats">
+      <div class="stat"><div class="v" id="s-orig">–</div><div class="k">ASCII bits (8/sym)</div></div>
+      <div class="stat"><div class="v" id="s-huff">–</div><div class="k">Huffman bits</div></div>
+      <div class="stat"><div class="v" id="s-avg">–</div><div class="k">Avg code length</div></div>
+      <div class="stat"><div class="v" id="s-ent">–</div><div class="k">Entropy (bits/sym)</div></div>
+    </div>
+    <div class="bar"><div id="s-bar" style="width:0%"></div></div>
+    <div class="k" id="s-save" style="font-size:12px;color:var(--muted);margin-top:6px"></div>
+
+    <h3>Codebook</h3>
+    <table id="codes"><thead><tr><th>Sym</th><th>Freq</th><th>Code</th><th>Len</th></tr></thead><tbody></tbody></table>
+  </aside>
+
+  <main class="main">
+    <div class="status" id="status">Enter text and press <b>Build tree</b>, then step through the merges.</div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--leaf)"></i>Leaf (symbol)</span>
+      <span><i class="dot" style="background:var(--node)"></i>Internal node</span>
+      <span><i class="dot" style="background:var(--hl)"></i>Next to merge</span>
+      <span>Edges: <b style="color:var(--muted)">0</b> = left, <b style="color:var(--muted)">1</b> = right</span>
+    </div>
+    <div class="stage"><svg id="svg" preserveAspectRatio="xMidYMin meet"></svg></div>
+  </main>
+</div>
+
+<script>
+"use strict";
+const SVGNS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+
+const presets=[
+  ["huffman coding","huffman coding"],
+  ["abracadabra","abracadabra"],
+  ["mississippi","mississippi"],
+  ["AAAAAAAABBBBCCD","AAAAAAAABBBBCCD"],
+  ["lorem","the quick brown fox jumps over the lazy dog"],
+];
+const pc=$("presets");
+presets.forEach(([label,val])=>{
+  const b=document.createElement("span");b.className="chip";b.textContent=label;
+  b.onclick=()=>{$("txt").value=val;build();};
+  pc.appendChild(b);
+});
+
+let state={states:[],merges:[],idx:0,codes:{},timer:null,playing:false};
+
+function freqOf(text){
+  const m=new Map();
+  for(const ch of text) m.set(ch,(m.get(ch)||0)+1);
+  return m;
+}
+let UID=0;
+function leaf(sym,freq){return {id:++UID,sym,freq,left:null,right:null};}
+
+// Build full Huffman tree, recording forest snapshots + the pair merged at each step.
+function buildSteps(freqMap){
+  let forest=[...freqMap.entries()].map(([s,f])=>leaf(s,f));
+  // stable order: by freq then by first-appearance (insertion) for determinism
+  const order=new Map([...freqMap.keys()].map((k,i)=>[k,i]));
+  const cmp=(a,b)=> a.freq-b.freq || (leafKey(a)-leafKey(b));
+  function leafKey(n){ // tie-break by smallest symbol order in subtree, then id
+    return n.sym!==null&&n.sym!==undefined? (order.has(n.sym)?order.get(n.sym):1e9) : n.id+1e6;
+  }
+  const states=[forest.slice()], merges=[];
+  while(forest.length>1){
+    forest.sort(cmp);
+    const a=forest[0], b=forest[1];
+    const parent={id:++UID,sym:null,freq:a.freq+b.freq,left:a,right:b};
+    merges.push({a:a.id,b:b.id,parent:parent.id});
+    forest=forest.slice(2);forest.push(parent);
+    states.push(forest.slice());
+  }
+  return {states,merges};
+}
+
+function assignCodes(root){
+  const codes={};
+  if(!root) return codes;
+  if(root.sym!==null&&root.sym!==undefined){codes[root.sym]="0";return codes;}
+  (function walk(n,code){
+    if(n.sym!==null&&n.sym!==undefined){codes[n.sym]=code||"0";return;}
+    if(n.left) walk(n.left,code+"0");
+    if(n.right) walk(n.right,code+"1");
+  })(root,"");
+  return codes;
+}
+
+// ---- layout: lay out the current forest left-to-right ----
+function layoutForest(forest){
+  let leafX=0,maxDepth=0;
+  const pos=new Map();
+  function assign(n,depth){
+    maxDepth=Math.max(maxDepth,depth);
+    if(!n.left&&!n.right){pos.set(n.id,{x:leafX,depth});leafX++;return pos.get(n.id);}
+    const L=assign(n.left,depth+1),R=assign(n.right,depth+1);
+    const p={x:(L.x+R.x)/2,depth};pos.set(n.id,p);return p;
+  }
+  forest.forEach(t=>{assign(t,0);leafX+=1;}); // gap between trees
+  return {pos,leafUnits:Math.max(leafX-1,1),maxDepth};
+}
+
+function flatten(forest){
+  const nodes=[],edges=[];
+  function walk(n){
+    nodes.push(n);
+    if(n.left){edges.push({from:n,to:n.left,bit:"0"});walk(n.left);}
+    if(n.right){edges.push({from:n,to:n.right,bit:"1"});walk(n.right);}
+  }
+  forest.forEach(walk);
+  return {nodes,edges};
+}
+
+function render(){
+  const svg=$("svg");
+  const forest=state.states[state.idx]||[];
+  const merge=state.merges[state.idx]; // the pair that will merge NEXT (highlight)
+  const hl=merge? new Set([merge.a,merge.b]):new Set();
+  const {pos,leafUnits,maxDepth}=layoutForest(forest);
+
+  const XS=70, YS=78, MX=50, MY=46, R=22;
+  const W=MX*2+leafUnits*XS, H=MY*2+maxDepth*YS+R;
+  svg.setAttribute("viewBox",`0 0 ${Math.max(W,400)} ${Math.max(H,300)}`);
+  const px=p=>MX+p.x*XS, py=p=>MY+p.depth*YS;
+
+  const {nodes,edges}=flatten(forest);
+  let h="";
+  // edges
+  for(const e of edges){
+    const a=pos.get(e.from.id),b=pos.get(e.to.id);
+    const x1=px(a),y1=py(a),x2=px(b),y2=py(b);
+    h+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--edge)" stroke-width="2"/>`;
+    h+=`<text class="edge-label" x="${(x1+x2)/2 + (e.bit==='0'?-12:12)}" y="${(y1+y2)/2}">${e.bit}</text>`;
+  }
+  // nodes
+  for(const n of nodes){
+    const p=pos.get(n.id),x=px(p),y=py(p);
+    const isLeaf=n.sym!==null&&n.sym!==undefined;
+    const fill=hl.has(n.id)?"var(--hl)":(isLeaf?"var(--leaf)":"var(--node)");
+    const stroke=hl.has(n.id)?"#fff":"rgba(255,255,255,.18)";
+    const tcol=hl.has(n.id)?"#1b1b1b":"#fff";
+    h+=`<circle class="node-circle" cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="${stroke}" stroke-width="${hl.has(n.id)?3:1.5}"/>`;
+    if(isLeaf){
+      const label=n.sym===" "?"␣":(n.sym==="\n"?"⏎":n.sym);
+      h+=`<text x="${x}" y="${y-1}" text-anchor="middle" font-family="var(--mono)" font-size="15" font-weight="700" fill="${tcol}">${esc(label)}</text>`;
+      h+=`<text x="${x}" y="${y+12}" text-anchor="middle" font-size="9" fill="${tcol}" opacity=".8">${n.freq}</text>`;
+    }else{
+      h+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="13" font-weight="700" fill="${tcol}">${n.freq}</text>`;
+    }
+  }
+  svg.innerHTML=h;
+
+  // status
+  const total=state.states.length-1;
+  if(forest.length===1&&total>0){
+    $("status").innerHTML=`<b>Done.</b> Single tree built in ${total} merges. Codes assigned below (left=0, right=1).`;
+  }else if(merge){
+    const fa=findFreq(forest,merge.a),fb=findFreq(forest,merge.b);
+    $("status").innerHTML=`Step <b>${state.idx}/${total}</b> — merging the two lowest-frequency roots (<b>${fa}</b> + <b>${fb}</b> = <b>${fa+fb}</b>). Press <b>Step ▶</b>.`;
+  }else{
+    $("status").innerHTML=`Forest of <b>${forest.length}</b> leaves. Press <b>Step ▶</b> or <b>Play</b>.`;
+  }
+}
+function findFreq(forest,id){for(const t of forest){const f=find(t,id);if(f)return f.freq;}return 0;}
+function find(n,id){if(!n)return null;if(n.id===id)return n;return find(n.left,id)||find(n.right,id);}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+function updateStats(freqMap){
+  const N=[...freqMap.values()].reduce((a,b)=>a+b,0);
+  const codes=state.codes;
+  let huff=0,H=0;
+  for(const[s,f]of freqMap){huff+=f*codes[s].length;const p=f/N;H+=-p*Math.log2(p);}
+  const ascii=N*8;
+  const avg=huff/N;
+  $("s-orig").textContent=ascii;
+  $("s-huff").textContent=huff;
+  $("s-avg").textContent=avg.toFixed(3);
+  $("s-ent").textContent=H.toFixed(3);
+  const pct=ascii>0?Math.max(0,(1-huff/ascii)*100):0;
+  $("s-bar").style.width=pct.toFixed(1)+"%";
+  $("s-save").textContent=`Saved ${pct.toFixed(1)}% vs 8-bit ASCII · avg length ${avg.toFixed(3)} bits/sym (entropy lower bound ${H.toFixed(3)})`;
+  // codebook table
+  const tb=$("codes").querySelector("tbody");tb.innerHTML="";
+  [...freqMap.entries()].sort((a,b)=>b[1]-a[1]).forEach(([s,f])=>{
+    const label=s===" "?"␣":(s==="\n"?"⏎":s);
+    tb.insertAdjacentHTML("beforeend",
+      `<tr><td class="sym">${esc(label)}</td><td>${f}</td><td class="code">${codes[s]}</td><td>${codes[s].length}</td></tr>`);
+  });
+}
+
+function build(){
+  stop();
+  const text=$("txt").value;
+  if(!text.length){$("status").textContent="Please enter some text.";return;}
+  const freqMap=freqOf(text);
+  UID=0;
+  const {states,merges}=buildSteps(freqMap);
+  state.states=states;state.merges=merges;state.idx=0;
+  state.codes=assignCodes(states[states.length-1][0]);
+  updateStats(freqMap);
+  render();
+}
+function fwd(){if(state.idx<state.states.length-1){state.idx++;render();}else stop();}
+function back(){if(state.idx>0){state.idx--;render();}}
+function play(){
+  if(state.playing){stop();return;}
+  if(state.idx>=state.states.length-1)state.idx=0;
+  state.playing=true;$("play").textContent="❚❚ Pause";
+  const tick=()=>{if(state.idx>=state.states.length-1){stop();return;}fwd();
+    state.timer=setTimeout(tick, 2000 - +$("speed").value);};
+  state.timer=setTimeout(tick, 2000 - +$("speed").value);
+}
+function stop(){state.playing=false;$("play").textContent="▶ Play";if(state.timer){clearTimeout(state.timer);state.timer=null;}}
+function reset(){stop();state.idx=0;render();}
+
+$("build").onclick=build;
+$("reset").onclick=reset;
+$("fwd").onclick=()=>{stop();fwd();};
+$("back").onclick=()=>{stop();back();};
+$("play").onclick=play;
+
+build();
+</script>
+</body>
+</html>
