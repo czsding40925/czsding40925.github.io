@@ -52,9 +52,9 @@
   .stat .v{font-size:21px;font-weight:800}
   .stat .k{font-size:11px;color:var(--muted);margin-top:2px}
 
-  h4.labh{margin:22px 0 8px;color:var(--ink);font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+  h4.labh{margin:24px 0 8px;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
   /* histogram */
-  .hist{display:flex;align-items:flex-end;gap:8px;height:170px;border-bottom:1px solid var(--line);padding-bottom:0}
+  .hist{display:flex;align-items:flex-end;gap:8px;height:170px;border-bottom:1px solid var(--line)}
   .hcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
   .hcol .hb{width:80%;border-radius:5px 5px 0 0;min-height:2px;background:linear-gradient(180deg,var(--accent),#3a63c4)}
   .hcol .hc{font-family:var(--mono);font-size:13px;margin-top:6px}
@@ -62,29 +62,32 @@
   .hcol .hn{font-size:10px;color:var(--muted);margin-bottom:4px}
 
   /* bits/symbol comparison */
-  .cmp{position:relative;margin:8px 0 2px}
   .crow{display:grid;grid-template-columns:120px 1fr 86px;align-items:center;gap:10px;margin:9px 0}
   .crow .lab2{font-size:13px;color:var(--muted)}
-  .track{position:relative;height:22px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
-  .track>div{height:100%;border-radius:5px}
+  .track{position:relative;height:24px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .track>.barfill{height:100%;border-radius:5px}
+  .track>.flr{position:absolute;top:-1px;bottom:-1px;width:0;border-left:2px dashed var(--accent2);z-index:2}
   .crow .num{font-family:var(--mono);font-size:13px;text-align:right}
-  .floor{position:absolute;top:0;bottom:18px;width:2px;background:repeating-linear-gradient(var(--accent2),var(--accent2) 4px,transparent 4px,transparent 8px)}
-  .floorlbl{position:absolute;font-size:11px;color:var(--accent2);transform:translateX(-50%);bottom:0}
 
   table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
   th,td{text-align:left;padding:5px 9px;border-bottom:1px solid var(--line)}
   th{color:var(--muted);font-weight:600}
   td.mono,th.mono{font-family:var(--mono)}
 
-  .svgwrap{background:var(--panel2);border:1px solid var(--line);border-radius:10px;margin-top:8px;overflow:hidden}
+  .svgwrap{background:var(--panel2);border:1px solid var(--line);border-radius:10px;margin-top:8px;overflow:auto}
   svg{width:100%;display:block}
+  .treebar{display:flex;gap:8px;align-items:center;padding:10px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .treebar .sp{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
   button{cursor:pointer;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:600}
   button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .treestat{font-size:12px;color:var(--muted)}
   .footlinks{display:flex;justify-content:space-between;margin-top:46px;font-size:14px}
   .footlinks a{color:var(--accent);text-decoration:none}
   .big-save{font-size:15px}
   .big-save b{color:var(--accent2)}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap;padding:0 10px 10px}
+  .legend i{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px}
 </style>
 </head>
 <body>
@@ -154,36 +157,56 @@
 
     <h4 class="labh">Bits per symbol — the race</h4>
     <div class="cmp" id="cmp"></div>
-    <div class="big-save" id="cmpnote" style="margin-top:10px"></div>
-
-    <h4 class="labh">Huffman code (built from your text)</h4>
-    <div class="row" style="margin-bottom:8px">
-      <button id="hufftoggle" class="ghost">Show the tree being built ▾</button>
-    </div>
-    <div id="treebox" class="svgwrap" style="display:none"><svg id="tree"></svg>
-      <div class="row" style="padding:10px;border-top:1px solid var(--line)">
-        <button id="back" class="ghost">◀</button><button id="play">▶ Play</button><button id="fwd" class="ghost">▶</button>
-        <span class="k" id="treestat" style="font-size:12px;color:var(--muted)"></span>
-      </div>
-    </div>
-    <table id="codetab"><thead><tr><th>Symbol</th><th>Freq</th><th class="mono">Huffman code</th><th>Len</th><th>Fixed</th></tr></thead><tbody></tbody></table>
+    <div class="big-save" id="cmpnote" style="margin-top:12px"></div>
   </div>
 
-  <p>Watch how the gap behaves: the more <b>skewed</b> your text (lots of repetition, few distinct symbols), the further Huffman drops below the fixed-length baseline — and the closer it hugs the entropy floor. Feed it something uniform, like random DNA, and all three nearly meet: there's simply less redundancy to exploit.</p>
+  <!-- ===================== STEP 5 : HUFFMAN ===================== -->
+  <div class="step">Step 5</div>
+  <h3>Huffman coding: the optimal code</h3>
+  <p>So how do we actually <i>build</i> the short-code-for-common-symbols rule? In 1952, a grad student named David Huffman found a beautifully simple recipe that produces the <b>provably optimal</b> prefix-free code:</p>
+  <p style="margin-left:4px">
+    1. Start with every symbol as its own little tree, weighted by its frequency.<br>
+    2. Take the <b>two lowest-weight</b> trees and merge them under a new parent (its weight is the sum).<br>
+    3. Repeat until a single tree remains.
+  </p>
+  <p>Reading the path from the root to each leaf — <b>left = 0, right = 1</b> — gives that symbol's codeword. Because frequent symbols get merged in <i>last</i>, they end up near the top with short codes, while rare symbols sink deep and get long ones. Exactly what we wanted.</p>
+  <p>Here's the tree being built from <b>your text above</b> — step through it, or hit play:</p>
+
+  <div class="card" style="padding:0">
+    <div class="svgwrap" style="margin:0;border:none;border-radius:14px 14px 0 0"><svg id="tree"></svg></div>
+    <div class="legend">
+      <span><i style="background:#2a6df4"></i>Leaf (symbol + freq)</span>
+      <span><i style="background:#3a3f5c"></i>Internal node (weight)</span>
+      <span><i style="background:#ffd34d"></i>Next to merge</span>
+      <span>edges: 0 = left, 1 = right</span>
+    </div>
+    <div class="treebar">
+      <button id="back" class="ghost">◀ Step</button>
+      <button id="play">▶ Play</button>
+      <button id="fwd" class="ghost">Step ▶</button>
+      <button id="resetT" class="ghost">Reset</button>
+      <span class="sp">slow <input id="speed" type="range" min="200" max="1500" value="750" step="50"> fast</span>
+      <span class="treestat" id="treestat"></span>
+    </div>
+  </div>
+
+  <h4 class="labh" style="margin-top:24px">The resulting codebook (top 10 symbols)</h4>
+  <table id="codetab"><thead><tr><th>Symbol</th><th>Freq</th><th class="mono">Huffman code</th><th>Len</th><th>Fixed</th></tr></thead><tbody></tbody></table>
+
+  <p style="margin-top:20px">Watch how the gap behaves: the more <b>skewed</b> your text (lots of repetition, few distinct symbols), the further Huffman drops below the fixed-length baseline — and the closer it hugs the entropy floor. Feed it something uniform, like random DNA, and all three nearly meet: there's simply less redundancy to exploit.</p>
 
   <h3>What's next</h3>
-  <p>Huffman gives the best possible code when each symbol gets a whole number of bits. But you may have noticed it still can't quite reach the entropy floor — because a symbol that "deserves" 1.4 bits has to round up to 2. Beating that requires letting symbols share fractional bits, which is exactly what <b>arithmetic coding</b> and <b>ANS</b> do. More demos coming.</p>
+  <p>Huffman is optimal when each symbol gets a <i>whole number</i> of bits. But you may notice it still can't quite reach the entropy floor — a symbol that "deserves" 1.4 bits has to round up to 2. Beating that requires letting symbols share <i>fractional</i> bits, which is exactly what <b>arithmetic coding</b> and <b>ANS</b> do. More demos coming.</p>
 
   <div class="footlinks">
     <a href="ee274.html">← All demos</a>
-    <a href="huffman.html">Standalone Huffman demo →</a>
+    <a href="https://stanforddatacompressionclass.github.io/notes/lossless_iid/intro.html" target="_blank">Course notes ↗</a>
   </div>
 </article>
 
 <script>
 "use strict";
 const $=s=>document.querySelector(s);
-const SVGNS="http://www.w3.org/2000/svg";
 function showsym(s){return s===" "?"␣":s==="\n"?"⏎":s==="\t"?"⇥":s;}
 function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
 
@@ -198,11 +221,11 @@ const presets=[
 
 /* ---------- Huffman ---------- */
 let UID=0;
-function huffman(freq){ // freq: Map sym->count ; returns {codes, lens, steps, merges, root}
+function huffman(freq){
   UID=0;
   const order=new Map([...freq.keys()].map((k,i)=>[k,i]));
   let forest=[...freq.entries()].map(([s,f])=>({id:++UID,sym:s,freq:f,left:null,right:null}));
-  const key=n=>n.sym!=null?(order.get(n.sym)):n.id+1e6;
+  const key=n=>n.sym!=null?order.get(n.sym):n.id+1e6;
   const cmp=(a,b)=>a.freq-b.freq||key(a)-key(b);
   const states=[forest.slice()],merges=[];
   while(forest.length>1){
@@ -223,9 +246,7 @@ function huffman(freq){ // freq: Map sym->count ; returns {codes, lens, steps, m
 }
 
 /* ---------- state ---------- */
-let H={};  // huffman result
-let freqArr=[]; // [ [sym,count], ... ] sorted desc
-let N=0,k=0;
+let H={}, freqArr=[], N=0, k=0;
 
 function recompute(){
   const text=$("#txt").value;
@@ -233,36 +254,29 @@ function recompute(){
   for(const ch of text) fm.set(ch,(fm.get(ch)||0)+1);
   N=text.length; k=fm.size;
   freqArr=[...fm.entries()].sort((a,b)=>b[1]-a[1]);
-
   if(N===0||k===0){blank();return;}
 
-  // metrics
   const fixedBits=k<=1?1:Math.ceil(Math.log2(k));
   let entropy=0; for(const[,c]of fm){const p=c/N;entropy+=-p*Math.log2(p);}
   H=huffman(fm);
   let huffTotal=0; for(const[s,c]of fm) huffTotal+=c*H.lens[s];
   const huffAvg=huffTotal/N;
-  const asciiTotal=8*N, fixedTotal=fixedBits*N, entTotal=entropy*N;
+  const asciiTotal=8*N;
   const ratio=asciiTotal/huffTotal;
   const saved=(1-huffTotal/asciiTotal)*100;
 
-  // stat cards
   $("#s-n").textContent=N;
   $("#s-k").textContent=k;
   $("#s-ratio").textContent=ratio.toFixed(2)+"×";
   $("#s-save").textContent=saved.toFixed(0)+"%";
 
-  // histogram
   renderHist();
-
-  // comparison
   renderCmp({ascii:8,fixed:fixedBits,huff:huffAvg,ent:entropy});
   $("#cmpnote").innerHTML=
-    `Fixed-length spends <b>${fixedBits}</b> bits/symbol. Huffman averages <b>${huffAvg.toFixed(2)}</b> — `+
-    `the entropy floor is <b>${entropy.toFixed(2)}</b>. Huffman is <b>${(huffAvg-entropy).toFixed(2)}</b> bits above the limit, `+
-    `and shrinks the file <b>${saved.toFixed(0)}%</b> versus 8-bit ASCII.`;
+    `Fixed-length spends <b>${fixedBits}</b> bits/symbol. Huffman averages <b>${huffAvg.toFixed(2)}</b>; `+
+    `the dashed entropy floor is <b>${entropy.toFixed(2)}</b>. Huffman lands <b>${(huffAvg-entropy).toFixed(2)}</b> bits above the limit `+
+    `and shrinks the file <b>${saved.toFixed(0)}%</b> vs 8-bit ASCII.`;
 
-  // code table (top 10)
   const tb=$("#codetab tbody");tb.innerHTML="";
   freqArr.slice(0,10).forEach(([s,c])=>{
     tb.insertAdjacentHTML("beforeend",
@@ -270,67 +284,40 @@ function recompute(){
   });
   if(k>10) tb.insertAdjacentHTML("beforeend",`<tr><td colspan="5" style="color:var(--muted)">…and ${k-10} more symbols</td></tr>`);
 
-  // tree
-  treeIdx=0; if($("#treebox").style.display!=="none") renderTree();
+  treeIdx=0; renderTree();
 }
 
 function blank(){
   ["s-n","s-k","s-ratio","s-save"].forEach(id=>$("#"+id).textContent="–");
   $("#hist").innerHTML="";$("#cmp").innerHTML="";$("#cmpnote").textContent="Type something above to begin.";
-  $("#codetab tbody").innerHTML="";$("#tree").innerHTML="";
+  $("#codetab tbody").innerHTML="";$("#tree").innerHTML="";$("#treestat").textContent="";
 }
 
 function renderHist(){
-  const top=freqArr.slice(0,10);
-  const max=top[0][1];
-  const el=$("#hist");el.innerHTML="";
+  const top=freqArr.slice(0,10), max=top[0][1], el=$("#hist");el.innerHTML="";
   top.forEach(([s,c])=>{
-    const pct=(c/N*100);
     el.insertAdjacentHTML("beforeend",
-      `<div class="hcol">
-        <div class="hn">${(c/N*100).toFixed(0)}%</div>
+      `<div class="hcol"><div class="hn">${(c/N*100).toFixed(0)}%</div>
         <div class="hb" style="height:${(c/max*100)}%"></div>
-        <div class="hc">${esc(showsym(s))}</div>
-        <div class="hp">${c}</div>
-      </div>`);
+        <div class="hc">${esc(showsym(s))}</div><div class="hp">${c}</div></div>`);
   });
 }
 
 function renderCmp(b){
-  const scale=8; // 0..8 bits axis
-  const pos=v=>Math.min(100,v/scale*100);
-  const rows=[
-    ["ASCII baseline",b.ascii,"var(--muted)"],
-    ["Fixed-length",b.fixed,"var(--warn)"],
-    ["Huffman",b.huff,"linear-gradient(90deg,var(--accent),var(--accent2))"],
-  ];
-  let h='<div style="position:relative">';
+  const scale=8, pos=v=>Math.min(100,v/scale*100);
+  const rows=[["ASCII baseline",b.ascii,"var(--muted)"],["Fixed-length",b.fixed,"var(--warn)"],["Huffman",b.huff,"linear-gradient(90deg,var(--accent),var(--accent2))"]];
+  let h="";
   rows.forEach(([lab,val,col])=>{
     h+=`<div class="crow"><div class="lab2">${lab}</div>
-      <div class="track"><div style="width:${pos(val)}%;background:${col}"></div></div>
+      <div class="track"><div class="barfill" style="width:${pos(val)}%;background:${col}"></div>
+        <div class="flr" style="left:${pos(b.ent)}%" title="entropy floor"></div></div>
       <div class="num">${val.toFixed(2)}</div></div>`;
   });
-  h+=`</div>`;
   $("#cmp").innerHTML=h;
-  // entropy floor line overlaid on the track column
-  const cmp=$("#cmp");
-  const floor=document.createElement("div");floor.className="floor";
-  // tracks start at 120px+10px gap; compute via the middle column width is fluid, so use a relative overlay inside each track instead:
-  // simpler: add a labeled marker under the rows
-  const note=document.createElement("div");
-  note.style.cssText="margin-top:4px;font-size:12px;color:var(--accent2)";
-  note.innerHTML=`▏ entropy floor = ${b.ent.toFixed(2)} bits/symbol (no code can beat this on average)`;
-  cmp.appendChild(note);
 }
 
 /* ---------- tree animation ---------- */
 let treeIdx=0,treeTimer=null;
-$("#hufftoggle").onclick=()=>{
-  const box=$("#treebox");const open=box.style.display!=="none";
-  box.style.display=open?"none":"block";
-  $("#hufftoggle").textContent=open?"Show the tree being built ▾":"Hide the tree ▴";
-  if(!open){treeIdx=0;renderTree();}
-};
 function layoutForest(forest){
   let leafX=0,maxD=0;const pos=new Map();
   function as(n,d){maxD=Math.max(maxD,d);if(!n.left&&!n.right){pos.set(n.id,{x:leafX++,d});return pos.get(n.id);}const L=as(n.left,d+1),R=as(n.right,d+1);const p={x:(L.x+R.x)/2,d};pos.set(n.id,p);return p;}
@@ -338,34 +325,53 @@ function layoutForest(forest){
   return {pos,leaves:Math.max(leafX-1,1),maxD};
 }
 function renderTree(){
-  if(!H.states){return;}
+  const svg=$("#tree");
+  if(!H.states){svg.innerHTML="";return;}
   const forest=H.states[Math.min(treeIdx,H.states.length-1)]||[];
   const merge=H.merges[treeIdx];
   const hl=merge?new Set([merge.a,merge.b]):new Set();
   const {pos,leaves,maxD}=layoutForest(forest);
-  const XS=48,YS=56,MX=30,MY=30,R=15;
+  const XS=58,YS=66,MX=34,MY=30,R=18;
   const W=MX*2+leaves*XS, Ht=MY*2+maxD*YS+R;
-  const svg=$("#tree");svg.setAttribute("viewBox",`0 0 ${Math.max(W,300)} ${Math.max(Ht,120)}`);
-  svg.style.height=Math.min(Math.max(Ht,120),340)+"px";
+  svg.setAttribute("viewBox",`0 0 ${Math.max(W,320)} ${Math.max(Ht,140)}`);
+  svg.setAttribute("preserveAspectRatio","xMidYMin meet");
+  svg.style.height=Math.min(Math.max(Ht,140),360)+"px";
   const px=p=>MX+p.x*XS, py=p=>MY+p.d*YS;
   const nodes=[],edges=[];
-  (function collect(list){list.forEach(function w(n){nodes.push(n);if(n.left){edges.push([n,n.left,"0"]);w(n.left);}if(n.right){edges.push([n,n.right,"1"]);w(n.right);}});})(forest);
+  forest.forEach(function w(n){nodes.push(n);if(n.left){edges.push([n,n.left,"0"]);w(n.left);}if(n.right){edges.push([n,n.right,"1"]);w(n.right);}});
   let h="";
-  edges.forEach(([f,t])=>{const a=pos.get(f.id),b=pos.get(t.id);h+=`<line x1="${px(a)}" y1="${py(a)}" x2="${px(b)}" y2="${py(b)}" stroke="#3a3f5c" stroke-width="1.5"/>`;});
+  edges.forEach(([f,t,bit])=>{const a=pos.get(f.id),b=pos.get(t.id);
+    const x1=px(a),y1=py(a),x2=px(b),y2=py(b);
+    h+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#3a3f5c" stroke-width="1.6"/>`;
+    h+=`<text x="${(x1+x2)/2+(bit==='0'?-10:10)}" y="${(y1+y2)/2}" text-anchor="middle" font-size="11" font-family="monospace" fill="#9aa0bd">${bit}</text>`;});
   nodes.forEach(n=>{const p=pos.get(n.id),x=px(p),y=py(p);const leaf=n.sym!=null;
     const fill=hl.has(n.id)?"#ffd34d":(leaf?"#2a6df4":"#3a3f5c");const tc=hl.has(n.id)?"#1b1b1b":"#fff";
-    h+=`<circle cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="rgba(255,255,255,.2)"/>`;
-    h+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="${leaf?11:10}" font-family="${leaf?'monospace':'sans-serif'}" font-weight="700" fill="${tc}">${leaf?esc(showsym(n.sym)):n.freq}</text>`;});
+    h+=`<circle cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="rgba(255,255,255,.2)" stroke-width="${hl.has(n.id)?2.5:1}"/>`;
+    if(leaf){
+      h+=`<text x="${x}" y="${y-1}" text-anchor="middle" font-size="12" font-family="monospace" font-weight="700" fill="${tc}">${esc(showsym(n.sym))}</text>`;
+      h+=`<text x="${x}" y="${y+10}" text-anchor="middle" font-size="8.5" fill="${tc}" opacity=".85">${n.freq}</text>`;
+    }else{
+      h+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="700" fill="${tc}">${n.freq}</text>`;
+    }});
   svg.innerHTML=h;
   const total=H.states.length-1;
-  $("#treestat").textContent= forest.length===1? `Done — ${total} merges, ${k} leaves.` : `Step ${treeIdx}/${total} — merging the two smallest.`;
+  if(forest.length===1) $("#treestat").textContent=`Done — built in ${total} merges (${k} symbols).`;
+  else if(merge){const fa=findFreq(forest,merge.a),fb=findFreq(forest,merge.b);
+    $("#treestat").textContent=`Step ${treeIdx}/${total} — merging ${fa} + ${fb} = ${fa+fb}.`;}
+  else $("#treestat").textContent=`${forest.length} trees remaining.`;
 }
+function findFreq(forest,id){for(const t of forest){const f=find(t,id);if(f)return f.freq;}return 0;}
+function find(n,id){if(!n)return null;if(n.id===id)return n;return find(n.left,id)||find(n.right,id);}
 function tfwd(){if(treeIdx<H.states.length-1){treeIdx++;renderTree();}else tstop();}
 function tback(){if(treeIdx>0){treeIdx--;renderTree();}}
 function tstop(){if(treeTimer){clearInterval(treeTimer);treeTimer=null;}$("#play").textContent="▶ Play";}
 $("#fwd").onclick=()=>{tstop();tfwd();};
 $("#back").onclick=()=>{tstop();tback();};
-$("#play").onclick=()=>{if(treeTimer){tstop();return;}if(treeIdx>=H.states.length-1)treeIdx=0;$("#play").textContent="❚❚";treeTimer=setInterval(()=>{if(treeIdx>=H.states.length-1)tstop();tfwd();},650);};
+$("#resetT").onclick=()=>{tstop();treeIdx=0;renderTree();};
+$("#play").onclick=()=>{if(treeTimer){tstop();return;}if(treeIdx>=H.states.length-1)treeIdx=0;
+  $("#play").textContent="❚❚ Pause";
+  const tick=()=>{if(treeIdx>=H.states.length-1){tstop();return;}tfwd();treeTimer=setTimeout(tick,1700-+$("#speed").value);};
+  treeTimer=setTimeout(tick,1700-+$("#speed").value);};
 
 $("#txt").addEventListener("input",recompute);
 recompute();
