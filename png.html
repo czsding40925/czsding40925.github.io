@@ -69,16 +69,23 @@
     <div class="siblings"><a href="lossless.html">← Lossless coding</a><a href="jpeg.html">Next: JPEG →</a></div>
   </div>
 
-  <!-- STEP 1 -->
+  <!-- STEP 1: what is an image -->
   <div class="step">Step 1</div>
+  <h3>First, what <i>is</i> an image?</h3>
+  <p>A digital image is just a grid of <b>pixels</b>, and each pixel is a few numbers. A color image stores three values per pixel — <b>red, green, blue</b> — each an integer from 0 to 255. So an image of height $H$ and width $W$ is really a <b>3 × H × W</b> stack of numbers: three "channels," each a $H\times W$ grid.</p>
+  <p>For example, a modest <code>1920 × 1080</code> photo is $3\times1080\times1920 \approx 6.2$ million numbers — about <b>6 MB</b> raw. That's the thing we want to shrink. (A grayscale image is simpler: one channel, just <code>1 × H × W</code> brightness values — which is what we'll filter below to keep the picture clear.)</p>
+  <div class="aside">Other layouts exist — a 4th <b>alpha</b> channel for transparency, or a small <b>palette</b> of colors referenced by index — but "a few numbers per pixel" is the whole story. Compression is the art of writing those numbers with fewer bits.</div>
+
+  <!-- STEP 2 -->
+  <div class="step">Step 2</div>
   <h3>Two reversible steps</h3>
   <p>PNG compresses in two stages, both perfectly reversible:</p>
   <p style="margin-left:4px"><b>1. Filtering (prediction).</b> Predict each pixel from its neighbors and store only the small <i>difference</i>.<br>
      <b>2. DEFLATE.</b> Compress those differences with LZ77 (find repeats) + Huffman coding.</p>
   <p>Stage 2 is the same Huffman coding from the <a href="huffman.html" style="color:var(--accent)">compression demos</a>. The interesting, image-specific part is stage 1 — so let's see what it does.</p>
 
-  <!-- STEP 2: filtering -->
-  <div class="step">Step 2</div>
+  <!-- STEP 3: filtering -->
+  <div class="step">Step 3</div>
   <h3>Filtering: predict, then store the surprise</h3>
   <p>Neighboring pixels are usually similar, so instead of storing each pixel's value, PNG stores how much it <i>differs</i> from a prediction made of already-seen neighbors — the pixel to the <b>left</b> (a), <b>above</b> (b), and <b>above-left</b> (c). PNG offers five predictors and picks the best per row:</p>
   <p style="margin-left:4px">
@@ -115,14 +122,14 @@
   </div>
   <p>Filtering doesn't shrink anything by itself — it <i>reshapes</i> the data. A smooth region becomes a sea of near-zero residuals, which has much lower entropy, so the Huffman stage that follows can encode it in far fewer bits. Notice how much bigger the entropy drop is on the synthetic image: flat colors and sharp text predict almost perfectly.</p>
 
-  <!-- STEP 3 -->
-  <div class="step">Step 3</div>
+  <!-- STEP 4 -->
+  <div class="step">Step 4</div>
   <h3>DEFLATE: repeats then Huffman</h3>
   <p>The filtered bytes are handed to <b>DEFLATE</b> — the same engine inside <code>.zip</code> and <code>.gz</code>. It first runs <b>LZ77</b>, replacing any repeated byte sequence with a short "go back <i>d</i> bytes and copy <i>n</i>" reference (think long runs of identical residuals), then <b>Huffman-codes</b> what's left. Because filtering produced so many zeros and repeats, DEFLATE has an easy job.</p>
   <div class="aside"><b>Why PNG never blurs:</b> every step here is exactly invertible — no quantization, no rounding away of detail. That's the whole point. The cost is that on photographs (lots of unpredictable texture) PNG can't compete with JPEG's size; on flat graphics it often <i>wins</i> and stays pixel-perfect.</div>
 
-  <!-- STEP 4: size lab -->
-  <div class="step">Step 4</div>
+  <!-- STEP 5: size lab -->
+  <div class="step">Step 5</div>
   <h3>Lossless vs lossy, head to head</h3>
   <p>Real file sizes for the current image — PNG (lossless) vs JPEG (lossy, quality 90) vs the raw pixels:</p>
   <div class="lab">
@@ -145,8 +152,8 @@
     </div>
   </div>
 
-  <!-- STEP 5 -->
-  <div class="step">Step 5</div>
+  <!-- STEP 6 -->
+  <div class="step">Step 6</div>
   <h3>The extras: transparency &amp; palettes</h3>
   <p>PNG also stores an <b>alpha</b> channel for smooth transparency (impossible in JPEG), and for images with few distinct colors it can switch to an <b>indexed palette</b> — store a small color table plus one index per pixel — shrinking flat graphics dramatically. Combined with filtering, that's why UI icons and diagrams are almost always PNG.</p>
 

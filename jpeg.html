@@ -213,7 +213,7 @@ function sizeCanvases(){
   ["#cY","#cCb","#cCr"].forEach(id=>{const c=$(id);c.width=W;c.height=Hh;});
 }
 function putRGB(canvas,data){canvas.getContext("2d").putImageData(data,0,0);}
-function drawFull(){$("#cFull").getContext("2d").putImageData(orig,0,0);}
+function drawFull(){$("#cFull").getContext("2d").putImageData(orig,0,0);$("#cOrig").getContext("2d").putImageData(orig,0,0);}
 
 function drawChannels(){
   const d=orig.data;
