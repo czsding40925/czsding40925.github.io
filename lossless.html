@@ -33,69 +33,46 @@
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin:18px 0}
   .aside{background:linear-gradient(180deg,rgba(91,140,255,.08),transparent);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:18px 0;font-size:15px}
   .aside b{color:var(--accent2)}
+  .def{background:rgba(70,209,162,.08);border:1px solid var(--accent2);border-radius:12px;padding:14px 16px;margin:16px 0}
+  .def b{color:var(--accent2)}
   .bitdemo{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-family:var(--mono);margin:6px 0}
   .glyph{font-size:22px;font-weight:800;background:var(--panel2);border:1px solid var(--line);border-radius:8px;width:42px;height:42px;display:grid;place-items:center}
   .arrow{color:var(--muted)}
   .bword span{display:inline-block;padding:3px 1px}
   .b1{color:var(--accent2)}.b0{color:var(--muted)}
-
-  /* ---- the lab ---- */
   .lab{background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:20px;margin:20px 0;box-shadow:0 0 0 4px rgba(91,140,255,.08)}
   .lab textarea{width:100%;height:96px;resize:vertical;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px;font-family:var(--mono);font-size:13.5px;line-height:1.5}
   .presets{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
   .chip{cursor:pointer;background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 12px;font-size:12.5px}
   .chip:hover{color:var(--ink);border-color:var(--accent)}
-
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
   @media(max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
   .stat{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px}
   .stat .v{font-size:21px;font-weight:800}
   .stat .k{font-size:11px;color:var(--muted);margin-top:2px}
-
   h4.labh{margin:24px 0 8px;color:var(--ink);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
-  /* histogram */
   .hist{display:flex;align-items:flex-end;gap:8px;height:170px;border-bottom:1px solid var(--line)}
   .hcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
   .hcol .hb{width:80%;border-radius:5px 5px 0 0;min-height:2px;background:linear-gradient(180deg,var(--accent),#3a63c4)}
   .hcol .hc{font-family:var(--mono);font-size:13px;margin-top:6px}
   .hcol .hp{font-size:10.5px;color:var(--muted)}
   .hcol .hn{font-size:10px;color:var(--muted);margin-bottom:4px}
-
-  /* bits/symbol comparison */
   .crow{display:grid;grid-template-columns:120px 1fr 86px;align-items:center;gap:10px;margin:9px 0}
   .crow .lab2{font-size:13px;color:var(--muted)}
   .track{position:relative;height:24px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
   .track>.barfill{height:100%;border-radius:5px}
-  .track>.flr{position:absolute;top:-1px;bottom:-1px;width:0;border-left:2px dashed var(--accent2);z-index:2}
   .crow .num{font-family:var(--mono);font-size:13px;text-align:right}
-
-  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
-  th,td{text-align:left;padding:5px 9px;border-bottom:1px solid var(--line)}
-  th{color:var(--muted);font-weight:600}
-  td.mono,th.mono{font-family:var(--mono)}
-
-  .svgwrap{background:var(--panel2);border:1px solid var(--line);border-radius:10px;margin-top:8px;overflow:auto}
-  svg{width:100%;display:block}
-  .treebar{display:flex;gap:8px;align-items:center;padding:10px;border-top:1px solid var(--line);flex-wrap:wrap}
-  .treebar .sp{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
-  button{cursor:pointer;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:600}
-  button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .treestat{font-size:12px;color:var(--muted)}
-  .footlinks{display:flex;justify-content:space-between;margin-top:46px;font-size:14px}
-  .footlinks a{color:var(--accent);text-decoration:none}
   .big-save{font-size:15px}
   .big-save b{color:var(--accent2)}
-  .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap;padding:0 10px 10px}
-  .legend i{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px}
-  /* arithmetic widget */
-  .acg label{display:block;font-size:12.5px;margin:8px 0 2px;font-family:var(--mono);color:var(--muted)}
-  .acg .lr{display:flex;align-items:center;gap:10px}
-  .acg input[type=range]{flex:1}
-  .acg .pval{font-family:var(--mono);font-size:12.5px;width:42px;text-align:right;color:var(--ink)}
-  .acmsg{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px;font-family:var(--mono);font-size:15px;letter-spacing:3px}
-  .acres{font-size:14px;margin-top:14px;line-height:1.75;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
-  .acres .num{font-family:var(--mono);color:var(--accent2)}
+  .nextgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+  @media(max-width:560px){.nextgrid{grid-template-columns:1fr}}
+  .nextcard{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;transition:transform .15s,border-color .15s}
+  .nextcard:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .nextcard .ch{font-size:11px;color:var(--accent2);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .nextcard h4{margin:6px 0 6px;color:var(--ink);font-size:17px}
+  .nextcard p{font-size:13.5px;color:var(--muted);margin:0}
+  .footlinks{display:flex;justify-content:space-between;margin-top:46px;font-size:14px}
+  .footlinks a{color:var(--accent);text-decoration:none}
 </style>
 </head>
 <body>
@@ -109,10 +86,10 @@
 
   <div class="hero">
     <h2>Make a file smaller — without losing a single bit.</h2>
-    <p>Text, music, and video are all just sequences of symbols stored as bits. <b>Lossless compression</b> is the art of writing the same information with fewer bits, so you can perfectly rebuild the original. Here's the whole idea — and a lab to try it on your own text.</p>
+    <p>Text, music, and video are all just sequences of symbols stored as bits. <b>Lossless compression</b> rewrites the same information with fewer bits, so you can perfectly rebuild the original. This page builds the core idea and finds the hard limit; two follow-ups show the codes that reach it.</p>
   </div>
 
-  <!-- ===================== STEP 1 ===================== -->
+  <!-- STEP 1 -->
   <div class="step">Step 1</div>
   <h3>Everything is bits</h3>
   <p>A computer can only store <code>0</code>s and <code>1</code>s. To store letters, we agree on a <b>code</b>: a mapping from each symbol to a pattern of bits. Standard text uses ASCII, where every character is 8 bits:</p>
@@ -129,25 +106,25 @@
   <p style="text-align:center">$\text{bits per symbol} = \lceil \log_2 k \rceil.$</p>
   <p>Four symbols? $\lceil\log_2 4\rceil = 2$ bits each. Just <code>A</code> and <code>B</code>? One bit each. This is <b>fixed-length coding</b>, and it's the baseline to beat.</p>
 
-  <!-- ===================== STEP 2 ===================== -->
+  <!-- STEP 2 -->
   <div class="step">Step 2</div>
   <h3>The trick: not every symbol is equally common</h3>
   <p>In English, <code>e</code> and the space character appear constantly, while <code>z</code> and <code>q</code> are rare. So why spend the <i>same</i> number of bits on each? <b>Give common symbols short codes and rare symbols longer ones</b>, and the average shrinks.</p>
   <div class="aside">Morse code figured this out in 1838: the most common English letter, <b>E</b>, is a single dot <code>·</code>, while <b>Q</b> is <code>— — · —</code>. Same idea, 180 years earlier.</div>
   <p>To do this well, we need to know how often each symbol shows up — its <b>probability distribution</b>. Frequencies are the raw material of compression: everything downstream is built from them.</p>
 
-  <!-- ===================== STEP 3 ===================== -->
+  <!-- STEP 3 -->
   <div class="step">Step 3</div>
   <h3>Entropy: the speed limit</h3>
   <p>Here's the beautiful part. Once you know the distribution, there's a hard limit on how few bits per symbol <i>any</i> code can use, on average. It's called the <b>entropy</b>:</p>
   <p style="text-align:center">$\displaystyle H = \sum_i p_i \,\log_2\frac{1}{p_i} \quad\text{bits per symbol.}$</p>
   <p>Read $\log_2\frac{1}{p_i}$ as the <b>"surprise"</b> of seeing symbol $i$: rare symbols are surprising and cost more bits; common ones are predictable and cost less. Entropy is just the <i>average</i> surprise — and it's the best any compressor can do.</p>
-  <div class="aside"><b>The fine print:</b> this limit assumes each symbol is independent of the last (the "i.i.d." assumption). Real text isn't — <code>q</code> is almost always followed by <code>u</code> — so smart compressors that model patterns can beat single-symbol entropy. But it's the perfect north star for our first compressor.</div>
+  <div class="aside"><b>The fine print:</b> this limit assumes each symbol is independent of the last (the "i.i.d." assumption). Real text isn't — <code>q</code> is almost always followed by <code>u</code> — so smart compressors that model patterns can beat single-symbol entropy. But it's the perfect north star.</div>
 
-  <!-- ===================== THE LAB ===================== -->
+  <!-- LAB -->
   <div class="step">Step 4 · Your turn</div>
-  <h3>The compression lab</h3>
-  <p>Type or paste anything below. We'll measure its symbol frequencies, then race three approaches: the fixed-length baseline, the entropy limit, and a real <b>Huffman code</b> built live from your text.</p>
+  <h3>See the gap for yourself</h3>
+  <p>Type or paste anything. We'll measure its frequencies and compare the fixed-length baseline against the entropy floor — the space we <i>could</i> save if only we had the right code.</p>
 
   <div class="lab">
     <textarea id="txt" spellcheck="false">the quick brown fox jumps over the lazy dog. the dog was not amused, but the fox did it again and again.</textarea>
@@ -156,93 +133,45 @@
     <div class="stats">
       <div class="stat"><div class="v" id="s-n">–</div><div class="k">symbols (length)</div></div>
       <div class="stat"><div class="v" id="s-k">–</div><div class="k">distinct symbols</div></div>
-      <div class="stat"><div class="v" id="s-ratio">–</div><div class="k">Huffman vs ASCII</div></div>
-      <div class="stat"><div class="v" id="s-save">–</div><div class="k">space saved</div></div>
+      <div class="stat"><div class="v" id="s-fixed">–</div><div class="k">fixed-length bits/sym</div></div>
+      <div class="stat"><div class="v" id="s-ent">–</div><div class="k">entropy bits/sym</div></div>
     </div>
 
     <h4 class="labh">Frequency histogram (top 10)</h4>
     <div class="hist" id="hist"></div>
 
-    <h4 class="labh">Bits per symbol — the race</h4>
+    <h4 class="labh">Bits per symbol</h4>
     <div class="cmp" id="cmp"></div>
     <div class="big-save" id="cmpnote" style="margin-top:12px"></div>
   </div>
 
-  <!-- ===================== STEP 5 : HUFFMAN ===================== -->
+  <!-- STEP 5: the question -->
   <div class="step">Step 5</div>
-  <h3>Huffman coding: the optimal code</h3>
-  <p>So how do we actually <i>build</i> the short-code-for-common-symbols rule? In 1952, a grad student named David Huffman found a beautifully simple recipe that produces the <b>provably optimal</b> prefix-free code:</p>
-  <p style="margin-left:4px">
-    1. Start with every symbol as its own little tree, weighted by its frequency.<br>
-    2. Take the <b>two lowest-weight</b> trees and merge them under a new parent (its weight is the sum).<br>
-    3. Repeat until a single tree remains.
-  </p>
-  <p>Reading the path from the root to each leaf — <b>left = 0, right = 1</b> — gives that symbol's codeword. Because frequent symbols get merged in <i>last</i>, they end up near the top with short codes, while rare symbols sink deep and get long ones. Exactly what we wanted.</p>
-  <p>Here's the tree being built from <b>your text above</b> — step through it, or hit play:</p>
+  <h3>So how do we reach the floor?</h3>
+  <p>Fixed-length coding sits well above the entropy line; entropy says far fewer bits are possible. Closing that gap is the entire game. But we can't use just any variable-length code — to be useful it has to be <b>decodable</b> and <b>efficient</b>. Two properties capture exactly what we want:</p>
 
-  <div class="card" style="padding:0">
-    <div class="svgwrap" style="margin:0;border:none;border-radius:14px 14px 0 0"><svg id="tree"></svg></div>
-    <div class="legend">
-      <span><i style="background:#2a6df4"></i>Leaf (symbol + freq)</span>
-      <span><i style="background:#3a3f5c"></i>Internal node (weight)</span>
-      <span><i style="background:#ffd34d"></i>Next to merge</span>
-      <span>edges: 0 = left, 1 = right</span>
-    </div>
-    <div class="treebar">
-      <button id="back" class="ghost">◀ Step</button>
-      <button id="play">▶ Play</button>
-      <button id="fwd" class="ghost">Step ▶</button>
-      <button id="resetT" class="ghost">Reset</button>
-      <span class="sp">slow <input id="speed" type="range" min="200" max="1500" value="750" step="50"> fast</span>
-      <span class="treestat" id="treestat"></span>
-    </div>
+  <div class="def"><b>Prefix-free.</b> No codeword is a prefix of another. That means a decoder reading left to right can commit to a symbol the instant it matches — no ambiguity, no peeking ahead. For example <code>A=0, B=10, C=11</code> is prefix-free; <code>A=0, B=01</code> is not (does <code>01</code> mean <code>B</code>, or <code>A</code> then the start of something?).</div>
+
+  <div class="def"><b>Optimal.</b> Among all prefix-free codes for a given distribution, the one with the <i>smallest average length</i> $\sum_i p_i \ell_i$ — i.e. the code that hugs the entropy floor as closely as whole-bit codewords allow.</div>
+
+  <p>Finding a code that's both prefix-free and optimal sounds hard — the space of possible codes is enormous. Remarkably, there's a simple algorithm that nails it, and another that breaks past the whole-bit barrier entirely:</p>
+
+  <div class="nextgrid">
+    <a class="nextcard" href="huffman.html">
+      <div class="ch">Next →</div>
+      <h4>Huffman coding</h4>
+      <p>A greedy tree-building recipe that produces the provably optimal prefix-free code. Watch it build live from your text.</p>
+    </a>
+    <a class="nextcard" href="arithmetic.html">
+      <div class="ch">Then →</div>
+      <h4>Arithmetic coding</h4>
+      <p>Encodes a whole message as one number, sharing fractional bits to slip below Huffman, right down to the entropy floor.</p>
+    </a>
   </div>
-
-  <h4 class="labh" style="margin-top:24px">The resulting codebook (top 10 symbols)</h4>
-  <table id="codetab"><thead><tr><th>Symbol</th><th>Freq</th><th class="mono">Huffman code</th><th>Len</th><th>Fixed</th></tr></thead><tbody></tbody></table>
-
-  <p style="margin-top:20px">Watch how the gap behaves: the more <b>skewed</b> your text (lots of repetition, few distinct symbols), the further Huffman drops below the fixed-length baseline — and the closer it hugs the entropy floor. Feed it something uniform, like random DNA, and all three nearly meet: there's simply less redundancy to exploit.</p>
-
-  <!-- ===================== STEP 6 : ARITHMETIC ===================== -->
-  <div class="step">Step 6</div>
-  <h3>Arithmetic coding: sharing fractional bits</h3>
-  <p>Huffman is optimal — but only when each symbol gets a <i>whole number</i> of bits. A symbol that "deserves" 1.4 bits still costs 2, so there's up to a <b>1-bit-per-symbol</b> tax. <b>Arithmetic coding</b> sidesteps this entirely: it encodes the <i>whole message</i> as a single number, so the rounding happens just <b>once</b> for the entire file.</p>
-  <p>The idea: start with the interval $[0,1)$ and, for each symbol, <b>shrink it</b> to the sub-slice that symbol owns (each symbol gets a slice as wide as its probability). After the last symbol you're left with a tiny interval; sending <i>any</i> number inside it identifies the exact message. Crucially:</p>
-  <p style="margin-left:6px">• more probable message ⟶ bigger final interval ⟶ <b>fewer bits</b> to pin down.<br>
-     • the final interval's width is exactly $P(\text{message}) = \prod_i p(x_i)$, so the cost is $\approx \log_2\frac{1}{P(\text{message})}$ bits — the message's information content.</p>
-
-  <div class="lab acg">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="grid2">
-      <div>
-        <div style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px">Symbol probabilities</div>
-        <div id="acsliders"></div>
-      </div>
-      <div>
-        <div style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Message to encode</div>
-        <input class="acmsg" id="acmsg" value="BACB" spellcheck="false" />
-        <div class="presets" id="acpresets"></div>
-      </div>
-    </div>
-
-    <div class="svgwrap" style="margin-top:16px;background:transparent;border:none"><svg id="acsvg"></svg></div>
-
-    <div class="row" style="margin-top:6px">
-      <button id="acback" class="ghost">◀ Step</button>
-      <button id="acplay">▶ Play</button>
-      <button id="acstep" class="ghost">Step ▶</button>
-      <button id="acreset" class="ghost">Reset</button>
-    </div>
-    <div class="acres" id="acres"></div>
-  </div>
-
-  <p>Try the presets: with a <b>skewed, longer</b> message, arithmetic coding crushes Huffman, because Huffman pays its rounding tax on <i>every</i> symbol while arithmetic pays a fixed ~2-bit overhead <i>once</i>. This is why modern codecs (JPEG, H.264/H.265, zstd) lean on arithmetic-style coders.</p>
-
-  <h3>What's next</h3>
-  <p>Arithmetic coding hits the entropy floor but is relatively slow. <b>ANS</b> (Asymmetric Numeral Systems) gets the same compression at Huffman-like speeds, which is why it powers Zstandard and LZMA. And so far we've assumed symbols are independent — real data has <i>patterns</i>, which <b>context modeling</b> and <b>LZ77</b> exploit. Those demos are coming next.</p>
 
   <div class="footlinks">
     <a href="ee274.html">← All demos</a>
-    <a href="https://stanforddatacompressionclass.github.io/notes/lossless_iid/arithmetic_coding.html" target="_blank">Course notes ↗</a>
+    <a href="huffman.html">Huffman coding →</a>
   </div>
 </article>
 
@@ -251,7 +180,6 @@
 const $=s=>document.querySelector(s);
 function showsym(s){return s===" "?"␣":s==="\n"?"⏎":s==="\t"?"⇥":s;}
 function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
-
 const presets=[
   ["English","the quick brown fox jumps over the lazy dog. the dog was not amused, but the fox did it again and again."],
   ["Very repetitive","aaaaaaaaaaaaaaaaaaaabbbbbbbbbbcccccdddee"],
@@ -261,35 +189,7 @@ const presets=[
 ];
 (function(){const p=$("#presets");presets.forEach(([l,v])=>{const b=document.createElement("span");b.className="chip";b.textContent=l;b.onclick=()=>{$("#txt").value=v;recompute();};p.appendChild(b);});})();
 
-/* ---------- Huffman ---------- */
-let UID=0;
-function huffman(freq){
-  UID=0;
-  const order=new Map([...freq.keys()].map((k,i)=>[k,i]));
-  let forest=[...freq.entries()].map(([s,f])=>({id:++UID,sym:s,freq:f,left:null,right:null}));
-  const key=n=>n.sym!=null?order.get(n.sym):n.id+1e6;
-  const cmp=(a,b)=>a.freq-b.freq||key(a)-key(b);
-  const states=[forest.slice()],merges=[];
-  while(forest.length>1){
-    forest.sort(cmp);
-    const a=forest[0],b=forest[1];
-    const par={id:++UID,sym:null,freq:a.freq+b.freq,left:a,right:b};
-    merges.push({a:a.id,b:b.id});
-    forest=forest.slice(2);forest.push(par);
-    states.push(forest.slice());
-  }
-  const root=forest[0];
-  const codes={},lens={};
-  if(root){
-    if(root.sym!=null){codes[root.sym]="0";lens[root.sym]=1;}
-    else (function w(n,c){if(n.sym!=null){codes[n.sym]=c;lens[n.sym]=c.length;return;}w(n.left,c+"0");w(n.right,c+"1");})(root,"");
-  }
-  return {codes,lens,states,merges,root};
-}
-
-/* ---------- state ---------- */
-let H={}, freqArr=[], N=0, k=0;
-
+let freqArr=[], N=0, k=0;
 function recompute(){
   const text=$("#txt").value;
   const fm=new Map();
@@ -297,212 +197,32 @@ function recompute(){
   N=text.length; k=fm.size;
   freqArr=[...fm.entries()].sort((a,b)=>b[1]-a[1]);
   if(N===0||k===0){blank();return;}
-
   const fixedBits=k<=1?1:Math.ceil(Math.log2(k));
   let entropy=0; for(const[,c]of fm){const p=c/N;entropy+=-p*Math.log2(p);}
-  H=huffman(fm);
-  let huffTotal=0; for(const[s,c]of fm) huffTotal+=c*H.lens[s];
-  const huffAvg=huffTotal/N;
-  const asciiTotal=8*N;
-  const ratio=asciiTotal/huffTotal;
-  const saved=(1-huffTotal/asciiTotal)*100;
-
   $("#s-n").textContent=N;
   $("#s-k").textContent=k;
-  $("#s-ratio").textContent=ratio.toFixed(2)+"×";
-  $("#s-save").textContent=saved.toFixed(0)+"%";
-
+  $("#s-fixed").textContent=fixedBits;
+  $("#s-ent").textContent=entropy.toFixed(2);
   renderHist();
-  renderCmp({ascii:8,fixed:fixedBits,huff:huffAvg,ent:entropy});
+  renderCmp({ascii:8,fixed:fixedBits,ent:entropy});
+  const gap=fixedBits-entropy;
   $("#cmpnote").innerHTML=
-    `Fixed-length spends <b>${fixedBits}</b> bits/symbol. Huffman averages <b>${huffAvg.toFixed(2)}</b>; `+
-    `the dashed entropy floor is <b>${entropy.toFixed(2)}</b>. Huffman lands <b>${(huffAvg-entropy).toFixed(2)}</b> bits above the limit `+
-    `and shrinks the file <b>${saved.toFixed(0)}%</b> vs 8-bit ASCII.`;
-
-  const tb=$("#codetab tbody");tb.innerHTML="";
-  freqArr.slice(0,10).forEach(([s,c])=>{
-    tb.insertAdjacentHTML("beforeend",
-      `<tr><td class="mono">${esc(showsym(s))}</td><td>${c}</td><td class="mono" style="color:var(--accent2)">${H.codes[s]}</td><td>${H.lens[s]}</td><td style="color:var(--muted)">${fixedBits}</td></tr>`);
-  });
-  if(k>10) tb.insertAdjacentHTML("beforeend",`<tr><td colspan="5" style="color:var(--muted)">…and ${k-10} more symbols</td></tr>`);
-
-  treeIdx=0; renderTree();
+    `Fixed-length spends <b>${fixedBits}</b> bits/symbol, but the entropy floor is just <b>${entropy.toFixed(2)}</b> — `+
+    `a gap of <b>${gap.toFixed(2)}</b> bits/symbol left on the table. A good code should close it.`;
 }
-
-function blank(){
-  ["s-n","s-k","s-ratio","s-save"].forEach(id=>$("#"+id).textContent="–");
-  $("#hist").innerHTML="";$("#cmp").innerHTML="";$("#cmpnote").textContent="Type something above to begin.";
-  $("#codetab tbody").innerHTML="";$("#tree").innerHTML="";$("#treestat").textContent="";
-}
-
+function blank(){["s-n","s-k","s-fixed","s-ent"].forEach(id=>$("#"+id).textContent="–");$("#hist").innerHTML="";$("#cmp").innerHTML="";$("#cmpnote").textContent="Type something above to begin.";}
 function renderHist(){
   const top=freqArr.slice(0,10), max=top[0][1], el=$("#hist");el.innerHTML="";
-  top.forEach(([s,c])=>{
-    el.insertAdjacentHTML("beforeend",
-      `<div class="hcol"><div class="hn">${(c/N*100).toFixed(0)}%</div>
-        <div class="hb" style="height:${(c/max*100)}%"></div>
-        <div class="hc">${esc(showsym(s))}</div><div class="hp">${c}</div></div>`);
-  });
+  top.forEach(([s,c])=>{el.insertAdjacentHTML("beforeend",
+    `<div class="hcol"><div class="hn">${(c/N*100).toFixed(0)}%</div><div class="hb" style="height:${(c/max*100)}%"></div><div class="hc">${esc(showsym(s))}</div><div class="hp">${c}</div></div>`);});
 }
-
 function renderCmp(b){
   const scale=8, pos=v=>Math.min(100,v/scale*100);
-  const rows=[["ASCII baseline",b.ascii,"var(--muted)"],["Fixed-length",b.fixed,"var(--warn)"],["Huffman",b.huff,"linear-gradient(90deg,var(--accent),var(--accent2))"]];
+  const rows=[["ASCII baseline",b.ascii,"var(--muted)"],["Fixed-length",b.fixed,"var(--warn)"],["Entropy floor",b.ent,"linear-gradient(90deg,var(--accent),var(--accent2))"]];
   let h="";
-  rows.forEach(([lab,val,col])=>{
-    h+=`<div class="crow"><div class="lab2">${lab}</div>
-      <div class="track"><div class="barfill" style="width:${pos(val)}%;background:${col}"></div>
-        <div class="flr" style="left:${pos(b.ent)}%" title="entropy floor"></div></div>
-      <div class="num">${val.toFixed(2)}</div></div>`;
-  });
+  rows.forEach(([lab,val,col])=>{h+=`<div class="crow"><div class="lab2">${lab}</div><div class="track"><div class="barfill" style="width:${pos(val)}%;background:${col}"></div></div><div class="num">${val.toFixed(2)}</div></div>`;});
   $("#cmp").innerHTML=h;
 }
-
-/* ---------- tree animation ---------- */
-let treeIdx=0,treeTimer=null;
-function layoutForest(forest){
-  let leafX=0,maxD=0;const pos=new Map();
-  function as(n,d){maxD=Math.max(maxD,d);if(!n.left&&!n.right){pos.set(n.id,{x:leafX++,d});return pos.get(n.id);}const L=as(n.left,d+1),R=as(n.right,d+1);const p={x:(L.x+R.x)/2,d};pos.set(n.id,p);return p;}
-  forest.forEach(t=>{as(t,0);leafX++;});
-  return {pos,leaves:Math.max(leafX-1,1),maxD};
-}
-function renderTree(){
-  const svg=$("#tree");
-  if(!H.states){svg.innerHTML="";return;}
-  const forest=H.states[Math.min(treeIdx,H.states.length-1)]||[];
-  const merge=H.merges[treeIdx];
-  const hl=merge?new Set([merge.a,merge.b]):new Set();
-  const {pos,leaves,maxD}=layoutForest(forest);
-  const XS=58,YS=66,MX=34,MY=30,R=18;
-  const W=MX*2+leaves*XS, Ht=MY*2+maxD*YS+R;
-  svg.setAttribute("viewBox",`0 0 ${Math.max(W,320)} ${Math.max(Ht,140)}`);
-  svg.setAttribute("preserveAspectRatio","xMidYMin meet");
-  svg.style.height=Math.min(Math.max(Ht,140),360)+"px";
-  const px=p=>MX+p.x*XS, py=p=>MY+p.d*YS;
-  const nodes=[],edges=[];
-  forest.forEach(function w(n){nodes.push(n);if(n.left){edges.push([n,n.left,"0"]);w(n.left);}if(n.right){edges.push([n,n.right,"1"]);w(n.right);}});
-  let h="";
-  edges.forEach(([f,t,bit])=>{const a=pos.get(f.id),b=pos.get(t.id);
-    const x1=px(a),y1=py(a),x2=px(b),y2=py(b);
-    h+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#3a3f5c" stroke-width="1.6"/>`;
-    h+=`<text x="${(x1+x2)/2+(bit==='0'?-10:10)}" y="${(y1+y2)/2}" text-anchor="middle" font-size="11" font-family="monospace" fill="#9aa0bd">${bit}</text>`;});
-  nodes.forEach(n=>{const p=pos.get(n.id),x=px(p),y=py(p);const leaf=n.sym!=null;
-    const fill=hl.has(n.id)?"#ffd34d":(leaf?"#2a6df4":"#3a3f5c");const tc=hl.has(n.id)?"#1b1b1b":"#fff";
-    h+=`<circle cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="rgba(255,255,255,.2)" stroke-width="${hl.has(n.id)?2.5:1}"/>`;
-    if(leaf){
-      h+=`<text x="${x}" y="${y-1}" text-anchor="middle" font-size="12" font-family="monospace" font-weight="700" fill="${tc}">${esc(showsym(n.sym))}</text>`;
-      h+=`<text x="${x}" y="${y+10}" text-anchor="middle" font-size="8.5" fill="${tc}" opacity=".85">${n.freq}</text>`;
-    }else{
-      h+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="700" fill="${tc}">${n.freq}</text>`;
-    }});
-  svg.innerHTML=h;
-  const total=H.states.length-1;
-  if(forest.length===1) $("#treestat").textContent=`Done — built in ${total} merges (${k} symbols).`;
-  else if(merge){const fa=findFreq(forest,merge.a),fb=findFreq(forest,merge.b);
-    $("#treestat").textContent=`Step ${treeIdx}/${total} — merging ${fa} + ${fb} = ${fa+fb}.`;}
-  else $("#treestat").textContent=`${forest.length} trees remaining.`;
-}
-function findFreq(forest,id){for(const t of forest){const f=find(t,id);if(f)return f.freq;}return 0;}
-function find(n,id){if(!n)return null;if(n.id===id)return n;return find(n.left,id)||find(n.right,id);}
-function tfwd(){if(treeIdx<H.states.length-1){treeIdx++;renderTree();}else tstop();}
-function tback(){if(treeIdx>0){treeIdx--;renderTree();}}
-function tstop(){if(treeTimer){clearInterval(treeTimer);treeTimer=null;}$("#play").textContent="▶ Play";}
-$("#fwd").onclick=()=>{tstop();tfwd();};
-$("#back").onclick=()=>{tstop();tback();};
-$("#resetT").onclick=()=>{tstop();treeIdx=0;renderTree();};
-$("#play").onclick=()=>{if(treeTimer){tstop();return;}if(treeIdx>=H.states.length-1)treeIdx=0;
-  $("#play").textContent="❚❚ Pause";
-  const tick=()=>{if(treeIdx>=H.states.length-1){tstop();return;}tfwd();treeTimer=setTimeout(tick,1700-+$("#speed").value);};
-  treeTimer=setTimeout(tick,1700-+$("#speed").value);};
-
-/* ---------- arithmetic coding (Step 6) ---------- */
-(function(){
-  const syms=["A","B","C"], COL={A:"#5b8cff",B:"#46d1a2",C:"#ffb454"};
-  let w={A:30,B:50,C:20}, step=0, P={}, cumLo={}, hlen={}, msg=[], steps=[], finalLo=0, finalHi=1, timer=null;
-  const sb=$("#acsliders");
-  syms.forEach(s=>{
-    sb.insertAdjacentHTML("beforeend",
-      `<label style="color:${COL[s]}">P(${s})</label><div class="lr"><input type="range" min="1" max="98" value="${w[s]}" id="ac-${s}"><span class="pval" id="acp-${s}"></span></div>`);
-    $("#ac-"+s).addEventListener("input",e=>{w[s]=+e.target.value;build(true);});
-  });
-  const acpre=[["Course example",{A:30,B:50,C:20},"BACB"],["Skewed, longer",{A:8,B:84,C:8},"BBBBABB"],["Even split",{A:33,B:34,C:33},"ACBAC"]];
-  const pc=$("#acpresets");
-  acpre.forEach(([l,pp,mm])=>{const b=document.createElement("span");b.className="chip";b.textContent=l;
-    b.onclick=()=>{w={...pp};syms.forEach(s=>$("#ac-"+s).value=w[s]);$("#acmsg").value=mm;step=0;build(true);};pc.appendChild(b);});
-  $("#acmsg").addEventListener("input",()=>build(true));
-  $("#acstep").onclick=()=>{stop();if(step<msg.length){step++;render();}};
-  $("#acback").onclick=()=>{stop();if(step>0){step--;render();}};
-  $("#acreset").onclick=()=>{stop();step=0;render();};
-  $("#acplay").onclick=()=>{if(timer){stop();return;}if(step>=msg.length)step=0;$("#acplay").textContent="❚❚ Pause";
-    timer=setInterval(()=>{if(step>=msg.length){stop();return;}step++;render();},950);};
-  function stop(){if(timer){clearInterval(timer);timer=null;}$("#acplay").textContent="▶ Play";}
-  function fracBits(x,L){let s="",v=x;for(let i=0;i<L;i++){v*=2;if(v>=1){s+="1";v-=1;}else s+="0";}return s;}
-
-  function build(keep){
-    const tot=syms.reduce((a,s)=>a+w[s],0)||1;
-    P={};syms.forEach(s=>P[s]=w[s]/tot);
-    syms.forEach(s=>$("#acp-"+s).textContent=P[s].toFixed(2));
-    cumLo={};let c=0;syms.forEach(s=>{cumLo[s]=c;c+=P[s];});
-    const fm=new Map(syms.map(s=>[s,Math.max(P[s],1e-9)]));
-    hlen=huffman(fm).lens;
-    let raw=($("#acmsg").value.toUpperCase().match(/[ABC]/g)||[]).slice(0,8);
-    if($("#acmsg").value!==raw.join("")) $("#acmsg").value=raw.join("");
-    msg=raw;
-    steps=[];let lo=0,hi=1;
-    for(const s of msg){steps.push({s,lo,hi});const r=hi-lo;const nlo=lo+r*cumLo[s];lo=nlo;hi=nlo+r*P[s];}
-    finalLo=lo;finalHi=hi;
-    if(step>msg.length)step=msg.length;
-    render();
-  }
-
-  function render(){
-    const svg=$("#acsvg"), m=msg.length;
-    if(m===0){svg.innerHTML="";$("#acres").innerHTML="Type a short message using A, B, C.";return;}
-    const last= step<m? step : m-1;
-    const X0=70,X1=930,BW=860,bandH=40,vgap=38,top=16;
-    const Hsvg= top + (last+1)*bandH + last*vgap + 14;
-    svg.setAttribute("viewBox",`0 0 1000 ${Hsvg}`);
-    svg.setAttribute("preserveAspectRatio","xMidYMin meet");
-    let h="";
-    for(let i=0;i<=last;i++){
-      const y=top+i*(bandH+vgap), {lo,hi}=steps[i], chosen= i<step? msg[i]:null;
-      syms.forEach(s=>{
-        const sx=X0+cumLo[s]*BW, sw=P[s]*BW, isC=chosen===s;
-        const op= chosen? (isC?1:0.16) : 0.5;
-        h+=`<rect x="${sx}" y="${y}" width="${sw}" height="${bandH}" fill="${COL[s]}" opacity="${op}" stroke="${isC?'#fff':'rgba(255,255,255,.15)'}" stroke-width="${isC?2:0.5}" rx="3"/>`;
-        if(sw>22) h+=`<text x="${sx+sw/2}" y="${y+bandH/2+4}" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="${isC?'#fff':'rgba(255,255,255,.65)'}">${s}</text>`;
-      });
-      h+=`<text x="${X0-7}" y="${y+bandH/2+4}" text-anchor="end" font-size="10" font-family="monospace" fill="#9aa0bd">${lo.toFixed(4)}</text>`;
-      h+=`<text x="${X1+7}" y="${y+bandH/2+4}" text-anchor="start" font-size="10" font-family="monospace" fill="#9aa0bd">${hi.toFixed(4)}</text>`;
-      if(i<step && i+1<=last){
-        const sx=X0+cumLo[chosen]*BW, sw=P[chosen]*BW, ny=y+bandH+vgap;
-        h+=`<path d="M ${sx} ${y+bandH} L ${X0} ${ny} L ${X1} ${ny} L ${sx+sw} ${y+bandH} Z" fill="${COL[chosen]}" opacity="0.10"/>`;
-        h+=`<line x1="${sx}" y1="${y+bandH}" x2="${X0}" y2="${ny}" stroke="${COL[chosen]}" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>`;
-        h+=`<line x1="${sx+sw}" y1="${y+bandH}" x2="${X1}" y2="${ny}" stroke="${COL[chosen]}" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>`;
-      }
-    }
-    svg.innerHTML=h;
-
-    const lo= step<m? steps[step].lo : finalLo, hi= step<m? steps[step].hi : finalHi;
-    const width=hi-lo;
-    if(step<m){
-      $("#acres").innerHTML=`Encoded <b>${msg.slice(0,step).join("")||"— (nothing yet)"}</b> → interval <span class="num">[${lo.toFixed(5)}, ${hi.toFixed(5)})</span>`+
-        `, width ${width.toExponential(2)} ≈ ${(-Math.log2(width)).toFixed(2)} bits so far. ${step<m?'Press <b>Step ▶</b> to encode '+msg[step]+'.':''}`;
-    }else{
-      const W=finalHi-finalLo, Z=(finalLo+finalHi)/2, info=-Math.log2(W), kbits=Math.ceil(info)+1;
-      let hb=0;msg.forEach(s=>hb+=hlen[s]);
-      let ent=0,havg=0;syms.forEach(s=>{ent+=P[s]*-Math.log2(P[s]);havg+=P[s]*hlen[s];});
-      const verdict= kbits<hb? `arithmetic wins by ${hb-kbits} bit${hb-kbits>1?'s':''}` : kbits>hb? `Huffman is ${kbits-hb} bit${kbits-hb>1?'s':''} shorter <i>here</i> (overhead dominates short messages)` : `a tie on this short message`;
-      $("#acres").innerHTML=
-        `<b>Done.</b> Final interval <span class="num">[${finalLo.toFixed(5)}, ${finalHi.toFixed(5)})</span>, width = P(message) = ${W.toExponential(2)}.<br>`+
-        `Send Z = ${Z.toFixed(5)} = <span class="num">0.${fracBits(Z,kbits)}</span>, truncated to k = ⌈log₂(1/width)⌉+1 = <b>${kbits} bits</b>.<br>`+
-        `This ${m}-symbol message → arithmetic <b>${kbits} bits</b> vs Huffman <b>${hb} bits</b> · ${verdict}.<br>`+
-        `<span style="color:var(--muted)">Per symbol, the fixed ~2-bit overhead vanishes as the message grows: arithmetic → entropy <b>${ent.toFixed(3)}</b> bits/sym, while Huffman is stuck at <b>${havg.toFixed(3)}</b>.</span>`;
-    }
-  }
-  build(true);
-})();
-
 $("#txt").addEventListener("input",recompute);
 recompute();
 </script>
