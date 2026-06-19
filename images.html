@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Image Compression — Interactive Walkthroughs</title>
+<style>
+  :root{
+    --bg:#0f1220;--panel:#171a2b;--panel2:#1e2238;--ink:#e7e9f3;--muted:#9aa0bd;
+    --accent:#5b8cff;--accent2:#46d1a2;--line:#2b3050;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6}
+  .topnav{max-width:920px;margin:0 auto;padding:20px 24px 0}
+  .topnav a{color:var(--muted);text-decoration:none;font-size:14px}
+  .topnav a:hover{color:var(--accent)}
+  .hero{max-width:920px;margin:0 auto;padding:20px 24px 8px}
+  h1{font-size:30px;margin:0 0 8px}
+  .sub{color:var(--muted);font-size:16px;max-width:660px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:32px 0}
+  .card{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .card.soon{opacity:.5;pointer-events:none}
+  .card .ch{font-size:11px;color:var(--accent2);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .card h2{font-size:17px;margin:6px 0 6px}
+  .card p{font-size:13.5px;color:var(--muted);margin:0}
+  .card .status{display:inline-block;margin-top:12px;font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted)}
+  .live{color:var(--accent2);border-color:var(--accent2)!important}
+  footer{max-width:920px;margin:0 auto 60px;padding:0 24px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+  <div class="topnav"><a href="index.html">← Connor Ding</a></div>
+  <div class="hero">
+    <h1>Image Compression</h1>
+    <p class="sub">Interactive walkthroughs of how real image formats shrink photos — what they keep, what they throw away, and why. Best read in order: PNG extends the <a href="ee274.html" style="color:var(--accent)">lossless coding</a> ideas to images, JPEG introduces lossy compression and the DCT, and WebP refines JPEG. Each page runs the actual compression in your browser.</p>
+
+    <div class="grid">
+      <a class="card" href="png.html">
+        <div class="ch">1 · Lossless</div>
+        <h2>PNG</h2>
+        <p>Filtering/prediction + DEFLATE (LZ77 + Huffman). See residuals collapse the entropy — a direct sequel to the lossless coding demos.</p>
+        <span class="status live">● Live</span>
+      </a>
+
+      <a class="card" href="jpeg.html">
+        <div class="ch">2 · Lossy</div>
+        <h2>JPEG</h2>
+        <p>Color, the DCT (a cousin of the Fourier transform), and quantization — plus a live quality lab and an 8×8 block explorer.</p>
+        <span class="status live">● Live</span>
+      </a>
+
+      <a class="card" href="webp.html">
+        <div class="ch">3 · Modern</div>
+        <h2>WebP</h2>
+        <p>Builds on JPEG with intra-prediction and a better entropy coder — encode WebP vs JPEG vs PNG live and compare bytes.</p>
+        <span class="status live">● Live</span>
+      </a>
+
+      <div class="card soon">
+        <div class="ch">Next</div>
+        <h2>AVIF · JPEG XL · Neural</h2>
+        <p>Modern and learned codecs via WebAssembly — a head-to-head showdown. Planned.</p>
+        <span class="status">Planned</span>
+      </div>
+    </div>
+  </div>
+  <footer>Built as plain HTML/JS/canvas — no build step. Compression runs entirely in your browser.</footer>
+</body>
+</html>
