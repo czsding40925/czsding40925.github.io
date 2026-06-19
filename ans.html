@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ANS — Interactive (EE274)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+  :root{
+    --bg:#0f1220;--panel:#171a2b;--panel2:#1e2238;--ink:#e7e9f3;--muted:#9aa0bd;
+    --accent:#5b8cff;--accent2:#46d1a2;--warn:#ffb454;--bad:#ff6b6b;--violet:#c98bff;--line:#2b3050;
+    --A:#5b8cff;--B:#46d1a2;--C:#ffb454;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65}
+  header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;position:sticky;top:0;background:rgba(15,18,32,.92);backdrop-filter:blur(6px);z-index:10}
+  header a.home{color:var(--muted);text-decoration:none;font-size:13px}
+  header h1{font-size:18px;margin:0;font-weight:650}
+  header .tag{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+  .doc{max-width:780px;margin:0 auto;padding:0 24px 90px}
+  .hero{padding:54px 0 8px}
+  .hero h2{font-size:34px;line-height:1.2;margin:0 0 14px;background:linear-gradient(90deg,#fff,#9fb4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{font-size:18px;color:#cfd3ec;margin:0}
+  .step{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-top:52px}
+  h3{font-size:24px;margin:6px 0 10px}
+  p{margin:13px 0;font-size:16px}
+  code{font-family:var(--mono);background:var(--panel2);padding:1px 5px;border-radius:5px;font-size:.9em}
+  .aside{background:linear-gradient(180deg,rgba(91,140,255,.08),transparent);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:18px 0;font-size:15px}
+  .aside b{color:var(--accent2)}
+  .lab{background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:20px;margin:20px 0;box-shadow:0 0 0 4px rgba(91,140,255,.08)}
+  .acmsg{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px;font-family:var(--mono);font-size:15px;letter-spacing:3px}
+  .presets{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+  .chip{cursor:pointer;background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 12px;font-size:12.5px}
+  .chip:hover{color:var(--ink);border-color:var(--accent)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+  .freqs label{display:block;font-size:12.5px;margin:8px 0 2px;font-family:var(--mono)}
+  .freqs .lr{display:flex;align-items:center;gap:10px}
+  .freqs input[type=range]{flex:1}
+  .freqs .pval{font-family:var(--mono);font-size:12.5px;width:64px;text-align:right;color:var(--muted)}
+  .statebox{background:#0c0f1d;border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:14px;text-align:center}
+  .statebox .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .statebox .x{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--accent2);word-break:break-all}
+  .statebox .bits{font-size:13px;color:var(--muted);margin-top:4px}
+  .bars{display:flex;align-items:flex-end;gap:5px;height:120px;border-bottom:1px solid var(--line);margin-top:14px}
+  .bars .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .bars .b{width:80%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--accent),#3a63c4);min-height:2px}
+  .bars .b.on{background:linear-gradient(180deg,var(--accent2),#2c8163)}
+  .bars .cl{font-family:var(--mono);font-size:11px;margin-top:4px;color:var(--muted)}
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+  button{cursor:pointer;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:600}
+  button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  .formula{font-family:var(--mono);font-size:13px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:12px;color:#cdd6ff;word-break:break-word}
+  .status{font-size:13.5px;color:var(--muted);margin-top:10px;min-height:20px}
+  .status b{color:var(--ink)}
+  .seq{font-family:var(--mono);font-size:18px;letter-spacing:3px;margin-top:6px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  @media(max-width:560px){.stats{grid-template-columns:1fr}}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px}
+  .stat .v{font-size:20px;font-weight:800}
+  .stat .k{font-size:11px;color:var(--muted);margin-top:2px}
+  .qbig{color:var(--accent2)}
+  .footlinks{display:flex;justify-content:space-between;margin-top:46px;font-size:14px}
+  .footlinks a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="ee274.html">← Demos</a>
+  <h1>ANS: Asymmetric Numeral Systems</h1>
+  <span class="tag">Interactive</span>
+</header>
+
+<article class="doc">
+  <div class="hero">
+    <h2>One number that remembers everything.</h2>
+    <p><a href="arithmetic.html" style="color:var(--accent)">Arithmetic coding</a> reaches the entropy floor but is slow. <b>ANS</b> hits the same compression at <a href="huffman.html" style="color:var(--accent)">Huffman</a>-like speeds — which is why it powers <code>Zstandard</code>, <code>LZMA</code>, and modern media. The trick: fold the entire message into a single growing integer, the <b>state</b>.</p>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step">Step 1</div>
+  <h3>Numbers already are a code</h3>
+  <p>Think about how a normal number stores digits. To append a digit $d$ (base 10) you compute $x' = 10x + d$; to read it back you take $d = x \bmod 10$ and $x = \lfloor x/10\rfloor$. A single integer losslessly stores a whole sequence of digits, newest on the outside.</p>
+  <p>That works great when all 10 digits are equally likely. But symbols in real data <i>aren't</i> equally likely — and spending the same "room" on a rare symbol as a common one wastes space. ANS makes the number system <b>asymmetric</b>: common symbols grow the state a little, rare symbols grow it a lot — by exactly $\log_2\frac1p$ bits each, just like the entropy thumb rule.</p>
+
+  <!-- STEP 2 -->
+  <div class="step">Step 2</div>
+  <h3>The rANS update</h3>
+  <p>Give each symbol $s$ an integer frequency $f_s$, with total $M=\sum_s f_s$ and cumulative offset $c_s$. Encoding one symbol transforms the state $x$:</p>
+  <p style="text-align:center">$x' = \left\lfloor \dfrac{x}{f_s}\right\rfloor \cdot M \;+\; (x \bmod f_s) \;+\; c_s.$</p>
+  <p>A frequent symbol (big $f_s$) barely changes $x$; a rare one (small $f_s$) multiplies it by roughly $M/f_s = 1/p_s$. Decoding is the exact inverse and pops symbols off in <b>reverse</b> order (last in, first out) — read the slot $x\bmod M$, find whose range it lands in, undo the step.</p>
+
+  <!-- LAB -->
+  <div class="step">Step 3 · Your turn</div>
+  <h3>Fold a message into one number</h3>
+  <p>Set the symbol frequencies, type a short message, and step through. Watch the state grow as it absorbs each symbol — then decode it back out in reverse, returning exactly to the start.</p>
+
+  <div class="lab">
+    <div class="grid2 freqs">
+      <div>
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px">Symbol frequencies (counts)</div>
+        <div id="freqs"></div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:6px">total <span id="Mval" class="qbig" style="font-family:var(--mono)">8</span></div>
+      </div>
+      <div>
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Message (A/B/C)</div>
+        <input class="acmsg" id="msg" value="BACB" spellcheck="false" />
+        <div class="presets" id="presets"></div>
+      </div>
+    </div>
+
+    <div class="statebox">
+      <div class="lbl">state x</div>
+      <div class="x" id="xval">–</div>
+      <div class="bits" id="xbits"></div>
+    </div>
+
+    <div class="bars" id="bars"></div>
+
+    <div class="formula" id="formula"></div>
+    <div class="controls">
+      <button id="back" class="ghost">◀ Step</button>
+      <button id="play">▶ Play</button>
+      <button id="fwd" class="ghost">Step ▶</button>
+      <button id="reset" class="ghost">Reset</button>
+      <span style="font-size:11px;color:var(--muted)">slow <input id="speed" type="range" min="200" max="1400" value="800" step="50"> fast</span>
+    </div>
+    <div class="status" id="status"></div>
+    <div class="seq" id="seq"></div>
+
+    <div class="stats">
+      <div class="stat"><div class="v qbig" id="s-bits">–</div><div class="k">final state size (bits)</div></div>
+      <div class="stat"><div class="v" id="s-info">–</div><div class="k">information content</div></div>
+      <div class="stat"><div class="v" id="s-huff">–</div><div class="k">Huffman would use</div></div>
+    </div>
+  </div>
+
+  <p>The state's bit-length climbs by about $\log_2\frac1{p_s}$ for each symbol — fractional bits and all — so ANS lands right at the entropy floor, just like arithmetic coding. The difference is speed: each step is a couple of integer operations and a table lookup, with no fractional arithmetic.</p>
+
+  <!-- STEP 4 -->
+  <div class="step">Step 4</div>
+  <h3>Why it took over</h3>
+  <p>For decades the choice was stark: <b>Huffman</b> (fast, but wastes up to a bit per symbol) or <b>arithmetic coding</b> (optimal, but slow). ANS — published by Jarek Duda in 2009 — gives you both at once. Its table-driven variant <b>tANS</b> turns the whole thing into a finite-state machine of lookups, which is why <code>zstd</code> and many modern codecs replaced Huffman with it. It's the entropy-coding stage sitting underneath a huge amount of today's data.</p>
+
+  <div class="footlinks">
+    <a href="arithmetic.html">← Arithmetic coding</a>
+    <a href="ee274.html">All demos →</a>
+  </div>
+</article>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const SYM=["A","B","C"], COL={A:"#5b8cff",B:"#46d1a2",C:"#ffb454"};
+let w={A:3,B:3,C:2};
+const fb=$("#freqs");
+SYM.forEach(s=>{
+  fb.insertAdjacentHTML("beforeend",
+    `<label style="color:${COL[s]}">f(${s})</label><div class="lr"><input type="range" min="1" max="16" value="${w[s]}" id="f-${s}"><span class="pval" id="fp-${s}"></span></div>`);
+  $("#f-"+s).addEventListener("input",e=>{w[s]=+e.target.value;build();});
+});
+const presets=[["BACB",{A:3,B:3,C:2},"BACB"],["A-heavy",{A:6,B:1,C:1},"AAAABAAC"],["even",{A:1,B:1,C:1},"ABCABC"]];
+const pc=$("#presets");
+presets.forEach(([l,ff,mm])=>{const b=document.createElement("span");b.className="chip";b.textContent=l;
+  b.onclick=()=>{w={...ff};SYM.forEach(s=>$("#f-"+s).value=w[s]);$("#msg").value=mm;build();};pc.appendChild(b);});
+
+let M=8n, F={}, C={}, msg=[], encStates=[], decTrace=[], k=0, timer=null;
+
+function build(){
+  stop();
+  const Mn=SYM.reduce((a,s)=>a+w[s],0); M=BigInt(Mn);
+  $("#Mval").textContent=Mn;
+  let c=0; SYM.forEach(s=>{F[s]=BigInt(w[s]);C[s]=BigInt(c);c+=w[s];
+    $("#fp-"+s).textContent=`${w[s]} (p=${(w[s]/Mn).toFixed(2)})`;});
+  let raw=($("#msg").value.toUpperCase().match(/[ABC]/g)||[]).slice(0,9);
+  if($("#msg").value!==raw.join("")) $("#msg").value=raw.join("");
+  msg=raw;
+  // encode trace: encStates[0]=M (start), encStates[i] after encoding msg[i-1]
+  encStates=[M];
+  let x=M;
+  for(const s of msg){ x = (x/F[s])*M + (x%F[s]) + C[s]; encStates.push(x); }
+  // decode trace from final state
+  decTrace=[]; let dx=encStates[encStates.length-1];
+  for(let i=0;i<msg.length;i++){
+    const slot=dx%M; let sym=null;
+    for(const s of SYM){ if(slot>=C[s] && slot<C[s]+F[s]){sym=s;break;} }
+    const nx = F[sym]*(dx/M) + (slot - C[sym]);
+    decTrace.push({sym,from:dx,to:nx,slot}); dx=nx;
+  }
+  k=0; render();
+}
+
+function bitlen(x){return x.toString(2).length;}
+
+function render(){
+  const n=msg.length;
+  // k in [0..2n]; 0..n = encoding (k symbols absorbed), n..2n = decoding
+  const enc = k<=n;
+  const encStep = Math.min(k,n);
+  const curState = enc ? encStates[encStep] : decTrace[k-n-1] ? decTrace[k-n-1].to : encStates[n];
+  // state box
+  $("#xval").textContent = curState.toString();
+  $("#xbits").textContent = `${bitlen(curState)} bits  ·  binary ${curState.toString(2)}`;
+  // bars: bit-length after each encode step (0..n)
+  const bars=$("#bars"); bars.innerHTML="";
+  const maxb=Math.max(...encStates.map(bitlen),1);
+  encStates.forEach((st,i)=>{
+    const on = enc ? i<=encStep : true;
+    const lbl = i===0?"start":msg[i-1];
+    bars.insertAdjacentHTML("beforeend",
+      `<div class="col"><div class="b ${enc&&i===encStep?'on':''}" style="height:${bitlen(st)/maxb*100}%;opacity:${on?1:.3}"></div><div class="cl">${lbl}</div></div>`);
+  });
+  // formula + status + sequence
+  if(enc){
+    if(encStep===0){
+      $("#formula").innerHTML=`start state x = M = ${M}`;
+      $("#status").innerHTML=`Ready. Step ▶ to absorb the first symbol.`;
+    }else{
+      const s=msg[encStep-1], xb=encStates[encStep-1], xa=encStates[encStep];
+      $("#formula").innerHTML=`encode '<b style="color:${COL[s]}">${s}</b>':  x = ⌊${xb}/${F[s]}⌋·${M} + (${xb} mod ${F[s]}) + ${C[s]} = <b style="color:var(--accent2)">${xa}</b>`;
+      $("#status").innerHTML=`Absorbed <b>${encStep}/${n}</b> symbols. State grew by <b>${bitlen(xa)-bitlen(xb)}</b> bit(s) (≈ ${(Math.log2(Number(M)/w[s])).toFixed(2)} expected for '${s}').`;
+    }
+    $("#seq").innerHTML = `message: ` + msg.map((c,i)=>`<span style="color:${i<encStep?COL[c]:'#5c6486'}">${c}</span>`).join("");
+  }else{
+    const j=k-n; // decode steps done
+    const popped=decTrace.slice(0,j).map(d=>d.sym);
+    const d=decTrace[j-1];
+    $("#formula").innerHTML = d?`decode: slot = ${d.from} mod ${M} = ${d.slot} → symbol '<b style="color:${COL[d.sym]}">${d.sym}</b>', x ← ${d.to}`:`decoding…`;
+    $("#status").innerHTML = j<n
+      ? `Decoding pops symbols in <b>reverse</b>: got <b>${popped.join("")}</b> so far.`
+      : `<b>Done.</b> Decoded (reversed) = <b>${popped.join("")}</b> → original <b>${[...popped].reverse().join("")}</b>. State returned to M = ${M}. ✓`;
+    $("#seq").innerHTML = `popped (LIFO): ` + popped.map(c=>`<span style="color:${COL[c]}">${c}</span>`).join("") + ` &nbsp;⇒&nbsp; original: ` + [...popped].reverse().map(c=>`<span style="color:${COL[c]}">${c}</span>`).join("");
+  }
+  // stats
+  const finalBits=bitlen(encStates[n]);
+  let info=0; for(const s of msg){const p=w[s]/Number(M); info+=-Math.log2(p);}
+  // huffman lengths on these freqs
+  const hl=huffLens(w); let hb=0; for(const s of msg) hb+=hl[s];
+  $("#s-bits").textContent = finalBits + " b";
+  $("#s-info").textContent = info.toFixed(2) + " b";
+  $("#s-huff").textContent = hb + " b";
+}
+
+function huffLens(freq){
+  let id=0; let F=SYM.map(s=>({id:++id,sym:s,f:freq[s],l:null,r:null}));
+  const ord=Object.fromEntries(SYM.map((s,i)=>[s,i]));
+  const key=n=>n.sym!=null?ord[n.sym]:n.id+1e6;
+  while(F.length>1){F.sort((a,b)=>a.f-b.f||key(a)-key(b));const a=F[0],b=F[1];F=F.slice(2);F.push({id:++id,sym:null,f:a.f+b.f,l:a,r:b});}
+  const root=F[0],lens={}; if(root.sym!=null)lens[root.sym]=1; else (function wlk(n,d){if(n.sym!=null){lens[n.sym]=d;return;}wlk(n.l,d+1);wlk(n.r,d+1);})(root,0);
+  return lens;
+}
+
+function fwd(){if(k<2*msg.length){k++;render();}else stop();}
+function back(){if(k>0){k--;render();}}
+function stop(){if(timer){clearInterval(timer);timer=null;}$("#play").textContent="▶ Play";}
+$("#fwd").onclick=()=>{stop();fwd();};
+$("#back").onclick=()=>{stop();back();};
+$("#reset").onclick=()=>{stop();k=0;render();};
+$("#play").onclick=()=>{if(timer){stop();return;}if(k>=2*msg.length)k=0;$("#play").textContent="❚❚ Pause";
+  const tick=()=>{if(k>=2*msg.length){stop();return;}fwd();timer=setTimeout(tick,1600-+$("#speed").value);};
+  timer=setTimeout(tick,1600-+$("#speed").value);};
+$("#msg").addEventListener("input",build);
+build();
+</script>
+</body>
+</html>
